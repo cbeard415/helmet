@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helmet Media | Toronto Premium Creative Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="icon" href="logo-white.png" type="image/png">
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@200;300;400;500;600&display=swap');
+
+        :root {
+            --obsidian: #0E0E10;
+            --graphite: #1C1C1F;
+            --off-white: #F5F5F7;
+            --cold-grey: #9A9A9E;
+            --matte-gold: #C9A24D;
+            --rec-red: #FF3B30;
+        }
+
+        /* Standart imleci gizle */
+        * {
+            cursor: none !important;
+        }
+
+        body {
+            background-color: var(--obsidian);
+            color: var(--off-white);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+        }
+
+        .mono {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Arka plan kumlanma efekti */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 9990;
+        }
+
+        /* İnteraktif sahne ışığı */
+        #stage-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 20%), rgba(201, 162, 77, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 30;
+            transition: background 0.15s ease-out;
+        }
+
+        /* Vizör çerçevesi (HUD) */
+        .viewfinder {
+            position: fixed;
+            inset: 120px 60px 60px 60px;
+            border: none;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .viewfinder::before,
+        .viewfinder::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: rgba(255, 255, 255, 0.05);
+            border-style: solid;
+        }
+
+        .viewfinder-tl {
+            top: 0;
+            left: 0;
+            border-width: 1px 0 0 1px;
+        }
+
+        .viewfinder-tr {
+            top: 0;
+            right: 0;
+            border-width: 1px 1px 0 0;
+        }
+
+        .viewfinder-bl {
+            bottom: 0;
+            left: 0;
+            border-width: 0 0 1px 1px;
+        }
+
+        .viewfinder-br {
+            bottom: 0;
+            right: 0;
+            border-width: 0 1px 1px 0;
+        }
+
+        /* Özel İmleç */
+        #cursor {
+            width: 6px;
+            height: 6px;
+            background: var(--off-white);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10001;
+            will-change: transform;
+        }
+
+        #cursor-follower {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(245, 245, 247, 0.15);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1), height 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+        }
+
+        /* İmleç Üzerine Gelme Durumları */
+        .cursor-hover #cursor {
+            background: var(--matte-gold);
+        }
+
+        .cursor-hover #cursor-follower {
+            width: 50px;
+            height: 50px;
+            border-color: rgba(201, 162, 77, 0.4);
+            border-style: dashed;
+            /* Animation removed to prevent position conflict */
+        }
+
+        /* Sürükleme Sırasındaki İmleç */
+        .cursor-grabbing #cursor {
+            transform: scale(2);
+            background: var(--matte-gold);
+        }
+
+        .cursor-grabbing #cursor-follower {
+            border-color: var(--matte-gold);
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Görünüm Geçişleri */
+        .view {
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .view-hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        /* Swiper Slider Styles */
+        .swiper {
+            width: 100%;
+            overflow: visible;
+            padding-bottom: 40px;
+            /* Space for scrollbar */
+        }
+
+        .swiper-wrapper {
+            /* Swiper handles this */
+        }
+
+        .swiper-slide {
+            height: auto;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .swiper-slide:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Custom Scrollbar Styling */
+        .swiper-scrollbar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 4px !important;
+            border-radius: 2px;
+            margin-top: 20px;
+        }
+
+        .swiper-scrollbar-drag {
+            background: #C9A24D;
+            border-radius: 2px;
+            cursor: grab;
+        }
+
+        .swiper-scrollbar-drag:active {
+            cursor: grabbing;
+        }
+
+        /* İletişim Modalı */
+        #contact-modal {
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #contact-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .glass-card {
+            background: rgba(14, 14, 16, 0.85);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-title {
+            background: linear-gradient(180deg, #FFFFFF 0%, #9A9A9E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .magnetic-wrap {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Video Modal Styles */
+        #video-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #video-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #video-modal .video-container {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            aspect-ratio: 9/16;
+            max-height: 85vh;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #video-modal.active .video-container {
+            transform: scale(1) translateY(0);
+        }
+
+        #video-modal video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: auto !important;
+        }
+
+        #video-modal .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        #video-modal .close-btn:hover {
+            background: var(--matte-gold);
+            border-color: var(--matte-gold);
+            transform: rotate(90deg);
+        }
+
+        #video-modal .close-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+        }
+
+        #video-modal .video-info {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        #video-modal .video-info p {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 10px;
+            color: var(--matte-gold);
+            letter-spacing: 0.3em;
+            margin-bottom: 8px;
+        }
+
+        #video-modal .video-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .swiper-slide[data-video] {
+            cursor: pointer;
+        }
+
+        .swiper-slide .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 60px;
+            height: 60px;
+            background: rgba(201, 162, 77, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 5;
+        }
+
+        .swiper-slide:hover .play-icon {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .swiper-slide .play-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            margin-left: 4px;
+        }
+
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+
+        }
+
+
+
+        /* Portrait Mask Effect */
+        .portrait-container {
+            position: relative;
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+        }
+
+
+        /* Header Temizliği */
+        nav {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Cyber Toggle Styles */
+        .cyber-toggle-wrapper {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 15px;
+            z-index: 60;
+            /* Ensure it's above other elements */
+        }
+
+        .cyber-toggle-checkbox {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .cyber-toggle {
+            position: relative;
+            display: inline-block;
+            width: 64px;
+            height: 32px;
+            cursor: pointer;
+        }
+
+        .cyber-toggle-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 0 4px rgba(0, 0, 0, 0.8);
+            transition: all 0.4s cubic-bezier(0.3, 1.5, 0.7, 1);
+        }
+
+        .cyber-toggle-track::before {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 14px;
+            background: #222;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+            z-index: 0;
+            transition: all 0.4s ease;
+        }
+
+        .cyber-toggle-track-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, #C9A24D, #AA8535);
+            opacity: 0;
+            border-radius: 16px;
+            z-index: 1;
+            transition: all 0.4s ease;
+        }
+
+        .cyber-toggle-thumb {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: #151515;
+            border-radius: 50%;
+            z-index: 2;
+            transition: all 0.4s cubic-bezier(0.3, 1.5, 0.7, 1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .cyber-toggle-thumb-shadow {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), transparent 70%);
+            z-index: 1;
+        }
+
+        .cyber-toggle-thumb-highlight {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.2), transparent 70%);
+            z-index: 1;
+        }
+
+        .cyber-toggle-thumb-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            opacity: 0.7;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .cyber-toggle-thumb-icon svg {
+            width: 14px;
+            height: 14px;
+            fill: #555;
+            transition: fill 0.4s ease, transform 0.4s ease;
+        }
+
+        .cyber-toggle-track-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-right: 10px;
+            z-index: 1;
+        }
+
+        .cyber-toggle-track-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: #444;
+            margin-left: 3px;
+            opacity: 0.5;
+            transition: all 0.4s ease;
+        }
+
+        .cyber-toggle-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .cyber-toggle-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #C9A24D;
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(1px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 4px rgba(201, 162, 77, 0.8);
+        }
+
+        .cyber-toggle-particle:nth-child(1) {
+            top: 15%;
+            right: 20%;
+        }
+
+        .cyber-toggle-particle:nth-child(2) {
+            top: 45%;
+            right: 30%;
+        }
+
+        .cyber-toggle-particle:nth-child(3) {
+            top: 25%;
+            right: 40%;
+        }
+
+        .cyber-toggle-particle:nth-child(4) {
+            top: 60%;
+            right: 15%;
+        }
+
+        .cyber-toggle-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .cyber-toggle-label-off {
+            color: #555;
+            transition: all 0.4s ease;
+        }
+
+        .cyber-toggle-label-on {
+            color: #555;
+            transition: all 0.4s ease;
+        }
+
+        /* Active states */
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-track-glow {
+            opacity: 0.5;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-thumb {
+            left: calc(100% - 28px);
+            background: #222;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-thumb-icon {
+            transform: rotate(360deg);
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-thumb-icon svg {
+            fill: #C9A24D;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-track-dot {
+            background: #C9A24D;
+            box-shadow: 0 0 4px #C9A24D;
+            opacity: 1;
+        }
+
+        .cyber-toggle-checkbox:checked~.cyber-toggle-labels .cyber-toggle-label-on {
+            color: #C9A24D;
+            text-shadow: 0 0 5px rgba(201, 162, 77, 0.5);
+        }
+
+        .cyber-toggle-checkbox:not(:checked)~.cyber-toggle-labels .cyber-toggle-label-off {
+            color: #aaa;
+        }
+
+        /* Particle animation when active */
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-particle {
+            opacity: 1;
+            animation: cyber-toggle-float 3s infinite alternate;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-particle:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-particle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-particle:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle .cyber-toggle-particle:nth-child(4) {
+            animation-delay: 1.5s;
+        }
+
+        /* Hover effect */
+        .cyber-toggle:hover .cyber-toggle-track::before {
+            background: #272727;
+        }
+
+        .cyber-toggle:hover .cyber-toggle-thumb {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .cyber-toggle-checkbox:checked+.cyber-toggle:hover .cyber-toggle-track-glow {
+            opacity: 0.7;
+        }
+
+        /* Focus effect */
+        .cyber-toggle-checkbox:focus+.cyber-toggle {
+            outline: none;
+        }
+
+        .cyber-toggle-checkbox:focus+.cyber-toggle::after {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 20px;
+            border: 2px solid rgba(201, 162, 77, 0.5);
+            opacity: 0.5;
+        }
+
+        @keyframes cyber-toggle-float {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* Slider İlerleme Çubuğu - Redesigned as HUD Element */
+        .slider-hud-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 24px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .slider-progress-container {
+            width: 120px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #slider-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--matte-gold);
+            box-shadow: 0 0 10px var(--matte-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-text-btn {
+            font-size: 9px;
+            letter-spacing: 0.4em;
+            color: var(--cold-grey);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-text-btn:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Yatay Galeri - Swiper Integration */
+        .swiper-slide {
+            width: 320px;
+            height: auto;
+        }
+
+        .gallery-item {
+            /* Styles now handled by swiper-slide or internal structure */
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .gallery-item>div {
+            pointer-events: auto;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+        }
+    </style>
+</head>
+
+<body class="bg-[#0E0E10] text-[#F5F5F7]">
+
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <!-- UI Katmanları -->
+    <div class="noise"></div>
+    <div id="stage-light"></div>
+
+
+    <!-- Navigasyon -->
+    <nav class="fixed top-0 w-full z-50 bg-[#0E0E10]/80 backdrop-blur-xl">
+        <div class="w-full mx-auto px-10 h-20 flex items-center justify-between">
+            <div class="text-lg font-medium tracking-tighter flex items-center gap-3 hover-target"
+                onclick="showView('home')">
+                <img src="logo-white.png" class="h-8 w-auto opacity-90" alt="Helmet Logo">
+                HELMET MEDIA
+            </div>
+            <div class="hidden md:flex space-x-20 text-xs uppercase tracking-[0.2em] font-medium mono text-[#9A9A9E]">
+                <button onclick="showView('home')" class="nav-link hover-target hover:text-white transition-colors">01.
+                    Home</button>
+                <button onclick="showView('me')" class="nav-link hover-target hover:text-white transition-colors">02.
+                    Me</button>
+                <button onclick="scrollToSection('portfolio')"
+                    class="nav-link hover-target hover:text-white transition-colors">03. Works</button>
+                <button onclick="scrollToSection('services')"
+                    class="nav-link hover-target hover:text-white transition-colors">04. Services</button>
+            </div>
+            <div class="flex items-center gap-8">
+                <!-- Spotlight Switch -->
+                <div class="flex flex-col items-center">
+                    <div class="cyber-toggle-wrapper scale-[0.6]">
+                        <input class="cyber-toggle-checkbox" id="cyber-toggle" type="checkbox" checked
+                            onchange="toggleSpotlight(this)" />
+                        <label class="cyber-toggle" for="cyber-toggle">
+                            <div class="cyber-toggle-track">
+                                <div class="cyber-toggle-track-glow"></div>
+                                <div class="cyber-toggle-track-dots">
+                                    <span class="cyber-toggle-track-dot"></span>
+                                    <span class="cyber-toggle-track-dot"></span>
+                                    <span class="cyber-toggle-track-dot"></span>
+                                </div>
+                            </div>
+                            <div class="cyber-toggle-thumb">
+                                <div class="cyber-toggle-thumb-shadow"></div>
+                                <div class="cyber-toggle-thumb-highlight"></div>
+                                <div class="cyber-toggle-thumb-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path
+                                            d="M16.5 12c0-2.48-2.02-4.5-4.5-4.5s-4.5 2.02-4.5 4.5 2.02 4.5 4.5 4.5 4.5-2.02 4.5-4.5zm-4.5 7.5c-4.14 0-7.5-3.36-7.5-7.5s3.36-7.5 7.5-7.5 7.5 3.36 7.5 7.5-3.36 7.5-7.5 7.5zm0-16.5c-4.97 0-9 4.03-9 9h-3l3.89 3.89.07.14 4.04-4.03h-3c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42c1.63 1.63 3.87 2.64 6.36 2.64 4.97 0 9-4.03 9-9s-4.03-9-9-9z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="cyber-toggle-particles">
+                                <span class="cyber-toggle-particle"></span>
+                                <span class="cyber-toggle-particle"></span>
+                                <span class="cyber-toggle-particle"></span>
+                                <span class="cyber-toggle-particle"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="magnetic-wrap hover-target">
+                    <button onclick="toggleModal(true)"
+                        class="text-xs uppercase tracking-[0.2em] border border-white/10 px-6 py-2.5 rounded-full hover:bg-white hover:text-black transition-all duration-500 mono">
+                        Say Hello
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ana İçerik -->
+    <main id="main-content">
+
+        <!-- HOME GÖRÜNÜMÜ -->
+        <div id="view-home" class="view">
+            <!-- Hero Bölümü -->
+            <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden">
+
+                <!-- Background Video -->
+                <div class="absolute inset-0 z-0">
+                    <video id="hero-video" autoplay muted loop playsinline
+                        class="w-full h-full object-cover opacity-20">
+                        <source src="website%20port.mp4" type="video/mp4">
+                    </video>
+                    <!-- Video Overlay for Blending -->
+                    <div class="absolute inset-0 bg-[#0E0E10]/20"></div>
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#0E0E10] via-transparent to-[#0E0E10]"></div>
+                </div>
+
+
+
+                <div class="relative z-10 text-center px-6">
+                    <div class="reveal mono text-sm text-[#C9A24D] tracking-[0.6em] mb-12 uppercase opacity-80">
+                        Director's Cut // Toronto</div>
+                    <h1
+                        class="reveal hero-title text-7xl md:text-[80px] font-light tracking-tighter mb-10 leading-[0.9] delay-100 serif">
+                        Your story is my inspiration
+                    </h1>
+                    <p
+                        class="reveal text-[#9A9A9E] max-w-lg mx-auto text-base md:text-lg font-light mb-16 leading-relaxed delay-200">
+                        I create immersive digital narratives for brands that demand cinematic precision and technical
+                        mastery.
+                    </p>
+                </div>
+
+                <!-- HUD Göstergeleri -->
+                <div
+                    class="absolute bottom-10 w-full px-12 flex justify-between items-end text-[9px] mono text-[#9A9A9E] opacity-40 z-20">
+                    <div>F-STOP: 1.4 // T: 1/60</div>
+                    <div></div>
+                    <div>ISO: 800 // 5600K</div>
+                </div>
+            </section>
+
+            <!-- Portfolyo Slider Bölümü - Updated for Cinematic HUD -->
+            <section id="portfolio" class="py-32 bg-[#1C1C1F]/10 overflow-hidden relative">
+                <div
+                    class="px-12 mb-16 reveal flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+                    <div>
+                        <span class="mono text-[14px] text-[#C9A24D] uppercase tracking-[0.4em] mb-6 block">Production
+                            Archive</span>
+                        <h2 class="text-4xl md:text-6xl font-light tracking-tight italic">Selected Frames.</h2>
+                    </div>
+
+                    <!-- New Cinematic HUD Slider Controls -->
+                    <div class="slider-hud-controls reveal mono">
+                        <div class="magnetic-wrap">
+                            <button onclick="scrollSlider('left')" class="nav-text-btn hover-target">
+                                <span class="opacity-20 mr-2">[</span>PREV<span class="opacity-20 ml-2">]</span>
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="mono text-[7px] text-white/20 tracking-[0.3em] uppercase">Playback Progress
+                            </div>
+                            <div class="slider-progress-container">
+                                <div id="slider-progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="magnetic-wrap">
+                            <button onclick="scrollSlider('right')" class="nav-text-btn hover-target">
+                                <span class="opacity-20 mr-2">[</span>NEXT<span class="opacity-20 ml-2">]</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper mySwiper w-full h-full pl-6 md:pl-24 pb-20 reveal" id="works-slider">
+                    <div class="swiper-wrapper">
+                        <!-- Galeri Öğeleri -->
+                        <!-- Item 1 -->
+                        <div class="swiper-slide group hover-target" data-video="Frenchy%20Intro.mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="Frenchy Toronto"
+                            onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-01.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">Frenchy Toronto</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20Regis%20Party.mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="Louix Louis"
+                            onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-02.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">Louix Louis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 3 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20Regis%20Chr.mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="Louix Louis"
+                            onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-03.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">Louix Louis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 4 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20Regis%201st%20Event%20(2).mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="St Regis" onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-04.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">St Regis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 5 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20Regis%202nd%20Event%20(2).mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="St Regis" onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-05.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">St Regis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 6 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20Regis%20Vday.mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="St Regis" onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-06.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">St Regis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 7 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20Regis%20Couple%20Stay.mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="St Regis" onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-07.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">St Regis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 8 -->
+                        <div class="swiper-slide group hover-target" data-video="Sounds%20Of%20Toronto%20.mov"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="Social" onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-08.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">Social</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Item 9 -->
+                        <div class="swiper-slide group hover-target" data-video="St%20regis%20Louis%20XIII.mp4"
+                            data-category="SOCIAL MEDIA CONTENT" data-title="St Regis" onclick="openVideoModal(this)">
+                            <div class="gallery-item">
+                                <div class="aspect-[9/16] rounded-xl overflow-hidden bg-white/5 relative">
+                                    <img src="frame-09.jpg"
+                                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 opacity-40 group-hover:opacity-100 pointer-events-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p class="mono text-[8px] text-[#C9A24D] mb-2 tracking-widest">SOCIAL MEDIA
+                                            CONTENT</p>
+                                        <h3 class="text-lg font-light">St Regis</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="swiper-slide opacity-10 flex items-center justify-center border border-dashed border-white/20 rounded-xl bg-white/5"
+                            style="width: 320px; aspect-ratio: 9/16;">
+                            <p class="mono text-xs tracking-widest">END OF PREVIEW</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hizmetler -->
+            <section id="services" class="py-40 px-12">
+                <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-32">
+                    <div class="reveal">
+                        <h2 class="text-5xl md:text-8xl font-light tracking-tighter mb-16 leading-[0.85] serif">
+                            Crafting <br>The Future</h2>
+                        <p class="text-[#9A9A9E] text-xl font-light leading-relaxed mb-16 max-w-md">
+                            My process is rooted in the intersection of cinematic tradition and technical innovation.
+                        </p>
+                    </div>
+                    <div class="space-y-12">
+                        <div class="reveal group border-b border-white/5 pb-12 hover-target">
+                            <span class="mono text-sm text-[#C9A24D] mb-6 block tracking-widest">01 /
+                                CINEMATOGRAPHY</span>
+                            <h3
+                                class="text-3xl font-light mb-6 transition-transform group-hover:translate-x-4 duration-500">
+                                Videography</h3>
+                            <p class="text-[#9A9A9E] font-light max-w-sm">4K/6K Raw production for high-end digital
+                                luxury and mobile consumption.</p>
+                        </div>
+                        <div class="reveal group border-b border-white/5 pb-12 hover-target delay-100">
+                            <span class="mono text-sm text-[#C9A24D] mb-6 block tracking-widest">02 / DIRECTION</span>
+                            <h3
+                                class="text-3xl font-light mb-6 transition-transform group-hover:translate-x-4 duration-500">
+                                Creative Strategy</h3>
+                            <p class="text-[#9A9A9E] font-light max-w-sm">Strategic curation and creative direction for
+                                brands that value silence over noise.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="py-20 px-12">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center gap-12 border-b border-white/5 pb-20">
+                    <div class="reveal">
+                        <h4 class="text-4xl font-light mb-2 serif">Helmet Media</h4>
+                        <p class="mono text-[10px] text-[#9A9A9E] tracking-[0.4em]">TORONTO // CURATED EXCELLENCE</p>
+                    </div>
+                    <button onclick="toggleModal(true)" class="reveal hover-target group flex items-center gap-8">
+                        <span
+                            class="text-xs uppercase tracking-[0.5em] font-medium opacity-60 group-hover:opacity-100">Contact</span>
+                        <div
+                            class="w-16 h-16 border border-white/10 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                            <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                        </div>
+                    </button>
+                </div>
+                <div
+                    class="pt-12 flex flex-col md:flex-row justify-between items-center text-[9px] mono text-[#9A9A9E] opacity-30 tracking-[0.5em]">
+                    <p>© 2024 HELMET MEDIA STUDIO</p>
+                    <p>43.6532° N, 79.3832° W</p>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ME VIEW - Identity Section Updated -->
+        <div id="view-me" class="view view-hidden pt-32 pb-40 px-6 md:px-12 min-h-screen">
+            <div class="max-w-7xl mx-auto">
+
+                <div class="grid lg:grid-cols-12 gap-16 lg:gap-24">
+
+                    <!-- Left: Cinematic Portrait Area -->
+                    <div class="lg:col-span-5 reveal">
+                        <div class="portrait-container border border-white/5 p-2 rounded-2xl">
+                            <div
+                                class="relative aspect-[3/4] rounded-xl overflow-hidden grayscale brightness-75 hover:brightness-100 hover:grayscale-0 transition-all duration-1000">
+                                <img src="headshot.png" alt="Identity Portrait" class="w-full h-full object-cover">
+
+
+                            </div>
+                        </div>
+
+                        <!-- Details Card -->
+                        <div class="mt-8 glass-card p-8 rounded-2xl flex items-center justify-between">
+                            <div class="space-y-1">
+                                <div class="mono text-sm text-[#C9A24D] uppercase">EXPERTISE</div>
+                                <div class="text-sm font-light">Videographer / Editor</div>
+                            </div>
+                            <div class="w-10 h-px bg-white/10"></div>
+                            <div class="space-y-1 text-right">
+                                <div class="mono text-sm text-[#C9A24D] uppercase">LOCATION</div>
+                                <div class="text-sm font-light">Toronto • GTA • Global</div>
+                            </div>
+                        </div>
+
+                        <!-- Manifesto Strip (Moved to Left) -->
+                        <div class="mt-12 glass-card p-8 rounded-2xl reveal delay-200">
+                            <div
+                                class="mono text-xs text-white/40 mb-8 border-b border-white/5 pb-4 uppercase tracking-widest">
+                                Manifesto / Strategy</div>
+                            <div class="grid grid-cols-2 gap-x-8 gap-y-8 mono text-sm tracking-widest text-[#C9A24D]">
+                                <div class="space-y-2 opacity-100 hover:opacity-100 transition-opacity">
+                                    <div class="text-white/40">[01]</div>
+                                    <div>8+ YEARS <br>EXPERIENCE</div>
+                                </div>
+                                <div class="space-y-2 opacity-100 hover:opacity-100 transition-opacity">
+                                    <div class="text-white/40">[02]</div>
+                                    <div>FILM <br>BACKGROUND</div>
+                                </div>
+                                <div class="space-y-2 opacity-100 hover:opacity-100 transition-opacity">
+                                    <div class="text-white/40">[03]</div>
+                                    <div>PREMIUM <br>WORKFLOW</div>
+                                </div>
+                                <div class="space-y-2 opacity-100 hover:opacity-100 transition-opacity">
+                                    <div class="text-white/40">[04]</div>
+                                    <div>SCALABLE <br>PRODUCTION</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Editorial Content -->
+                    <div class="lg:col-span-7 flex flex-col justify-center">
+                        <div class="reveal">
+                            <span class="mono text-[10px] text-[#C9A24D] uppercase tracking-[0.5em] mb-8 block">02 //
+                                The Identity</span>
+                            <h2 class="text-6xl md:text-[90px] font-light tracking-tighter mb-12 leading-[0.85]">
+                                The Mind <br>Behind <span class="italic text-[#9A9A9E]">The Frame.</span>
+                            </h2>
+                        </div>
+
+                        <div class="grid gap-12 text-[#9A9A9E] text-lg font-light leading-relaxed reveal delay-100">
+                            <div class="space-y-6">
+                                <p class="text-white">
+                                    Helmet Media is my one-person creative studio. Based in Toronto, I handle every
+                                    stage of production — from concept to final delivery. When projects grow, I scale
+                                    with trusted crew and professional rentals.
+                                </p>
+                                <p>
+                                    With 8 years in film & commercial production, I craft visuals that feel intentional,
+                                    clean, and expensive — without trying too hard. I don't just shoot. I design
+                                    attention.
+                                </p>
+                                <p>
+                                    Light, pacing, composition and silence between cuts matter to me. Every frame has a
+                                    reason. Every edit serves the story.
+                                </p>
+                            </div>
+
+                            <!-- Delivery Info -->
+                            <div class="bg-white/5 p-8 rounded-xl border border-white/5">
+                                <div class="mono text-sm text-[#C9A24D] mb-2 uppercase tracking-widest">Workflow
+                                </div>
+                                <div class="text-white text-xl font-light">Fast workflow. Clear communication. First
+                                    draft delivered in <span class="text-[#C9A24D]">6–8 business days</span>.</div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Action -->
+                        <div class="mt-20 reveal delay-300">
+                            <div class="magnetic-wrap hover-target">
+                                <button onclick="toggleModal(true)"
+                                    class="group flex items-center gap-6 text-xs uppercase tracking-[0.4em] font-medium text-white/40 hover:text-white transition-all">
+                                    <span
+                                        class="w-10 h-10 border border-white/10 rounded-full flex items-center justify-center group-hover:border-[#C9A24D] transition-colors">
+                                        <i data-lucide="mail" class="w-4 h-4 text-[#C9A24D]"></i>
+                                    </span>
+                                    Connect Privately
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- VİDEO MODALI -->
+    <div id="video-modal">
+        <div class="video-container">
+            <button class="close-btn hover-target" onclick="closeVideoModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <video id="modal-video" playsinline controls>
+                <source src="" type="video/mp4">
+            </video>
+            <div class="video-info">
+                <p id="modal-category"></p>
+                <h3 id="modal-title"></h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- İLETİŞİM MODALI -->
+    <div id="contact-modal" class="fixed inset-0 z-[100] flex items-center justify-center px-6">
+        <div class="absolute inset-0 bg-[#0E0E10]/95 backdrop-blur-md" onclick="toggleModal(false)"></div>
+        <div class="glass-card max-w-xl w-full p-12 rounded-[40px] relative z-10 shadow-2xl">
+            <button onclick="toggleModal(false)"
+                class="absolute top-8 right-8 text-[#9A9A9E] hover:text-white transition-colors hover-target">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="mono text-[9px] text-[#C9A24D] mb-6 tracking-[0.4em]">START THE PRODUCTION</div>
+            <h2 class="text-4xl font-light mb-10 leading-tight serif">Let's talk about <br>your vision.</h2>
+            <div class="space-y-8">
+                <a href="mailto:hello@helmetmedia.com" class="block group hover-target">
+                    <span class="block text-[10px] uppercase tracking-widest text-[#9A9A9E] mb-2">E-Mail</span>
+                    <span
+                        class="text-2xl font-light border-b border-white/10 group-hover:text-[#C9A24D] transition-colors pb-1">hello@helmetmedia.com</span>
+                </a>
+                <div class="flex gap-10 mt-12">
+                    <a href="#"
+                        class="hover-target hover:text-[#C9A24D] transition-colors text-[10px] mono tracking-widest">INSTAGRAM</a>
+                    <a href="#"
+                        class="hover-target hover:text-[#C9A24D] transition-colors text-[10px] mono tracking-widest">BEHANCE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // İmleç ve Işık Takibi
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        const light = document.getElementById('stage-light');
+        let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+            light.style.setProperty('--x', `${(mouseX / window.innerWidth) * 100}%`);
+            light.style.setProperty('--y', `${(mouseY / window.innerHeight) * 100}%`);
+        });
+
+        function animateCursor() {
+            followerX += (mouseX - followerX) * 0.2;
+            followerY += (mouseY - followerY) * 0.2;
+            follower.style.transform = `translate3d(${followerX - follower.offsetWidth / 2}px, ${followerY - follower.offsetHeight / 2}px, 0)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        function addHoverListeners() {
+            document.querySelectorAll('.hover-target').forEach(target => {
+                target.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                target.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+            });
+        }
+        addHoverListeners();
+
+        // Video Playback Fallback
+        window.addEventListener('load', () => {
+            const heroVideo = document.getElementById('hero-video');
+            if (heroVideo) {
+                heroVideo.play().catch(e => console.log("Autoplay failed:", e));
+            }
+        });
+
+        // Initializing Swiper with Cinematic HUD Integration
+        const progressFill = document.getElementById('slider-progress-fill');
+
+        function updateHudProgress(progress) {
+            // Clamp progress between 0 and 1
+            let p = Math.max(0, Math.min(1, progress));
+            if (progressFill) progressFill.style.width = `${p * 100}%`;
+        }
+
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: "auto",
+            spaceBetween: 32, // 2rem -> 32px
+            freeMode: true,
+            grabCursor: true,
+            mousewheel: {
+                forceToAxis: true,
+            },
+            keyboard: {
+                enabled: true,
+            },
+            on: {
+                progress: function (swiper, progress) {
+                    updateHudProgress(progress);
+                },
+                setTranslate: function (swiper, translate) {
+                    // Fallback for smoother progress updates during drag
+                    if (swiper.width > 0) {
+                        const progress = Math.abs(translate) / (swiper.virtualSize - swiper.width);
+                        updateHudProgress(progress);
+                    }
+                }
+            }
+        });
+
+        // Slider Navigasyon Butonları (HUD)
+        function scrollSlider(direction) {
+            if (!swiper) return;
+            if (direction === 'left') {
+                swiper.slidePrev();
+            } else {
+                swiper.slideNext();
+            }
+        }
+
+        // Initial Progress Update
+        updateHudProgress(0);
+
+        // Sayfa/Görünüm Geçişleri
+        function showView(viewName) {
+            const home = document.getElementById('view-home');
+            const me = document.getElementById('view-me');
+            window.scrollTo({ top: 0 });
+            if (viewName === 'home') {
+                home.classList.remove('view-hidden');
+                me.classList.add('view-hidden');
+                if (swiper) swiper.update(); // Update swiper when view becomes visible
+            } else {
+                me.classList.remove('view-hidden');
+                home.classList.add('view-hidden');
+            }
+            addHoverListeners();
+        }
+
+        // Bölüme Kaydırma
+        function scrollToSection(id) {
+            showView('home');
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const offset = 80;
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = element.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+                }
+            }, 100);
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('contact-modal');
+            if (show) modal.classList.add('active');
+            else modal.classList.remove('active');
+        }
+
+        // Manyetik Buton Efekti
+        document.querySelectorAll('.magnetic-wrap').forEach(wrap => {
+            wrap.addEventListener('mousemove', (e) => {
+                const pos = wrap.getBoundingClientRect();
+                const x = e.clientX - pos.left - pos.width / 2;
+                const y = e.clientY - pos.top - pos.height / 2;
+                wrap.style.transform = `translate3d(${x * 0.3}px, ${y * 0.3}px, 0)`;
+            });
+            wrap.addEventListener('mouseleave', () => wrap.style.transform = 'translate3d(0, 0, 0)');
+        });
+
+        // Kaydırma Animasyonları
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Spotlight Toggle Function
+        function toggleSpotlight(checkbox) {
+            const light = document.getElementById('stage-light');
+            if (checkbox.checked) {
+                light.style.display = 'block';
+            } else {
+                light.style.display = 'none';
+            }
+        }
+
+        // Video Modal Functions
+        function openVideoModal(element) {
+            const videoSrc = element.dataset.video;
+            const category = element.dataset.category;
+            const title = element.dataset.title;
+
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('modal-video');
+            const categoryEl = document.getElementById('modal-category');
+            const titleEl = document.getElementById('modal-title');
+
+            video.src = videoSrc;
+            categoryEl.textContent = category;
+            titleEl.textContent = title;
+
+            modal.classList.add('active');
+            video.play();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('modal-video');
+
+            video.pause();
+            video.currentTime = 0;
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+                toggleModal(false);
+            }
+        });
+
+        // Close modal when clicking outside video
+        document.getElementById('video-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'video-modal') {
+                closeVideoModal();
+            }
+        });
+    </script>
+</body>
+
+</html>

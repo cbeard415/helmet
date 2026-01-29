@@ -1,0 +1,12 @@
+# Video Files (Large)
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
