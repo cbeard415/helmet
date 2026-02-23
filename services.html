@@ -1,0 +1,567 @@
+<!-- HELMET MEDIA - Hizmetler Sayfası (Final Sürümü) -->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | Helmet Media</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="icon" href="logo-white.png" type="image/png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap');
+
+        :root {
+            --obsidian: #0E0E10;
+            --graphite: #1C1C1F;
+            --off-white: #F5F5F7;
+            --cold-grey: #9A9A9E;
+            --matte-gold: #C9A24D;
+        }
+
+        body {
+            background-color: var(--obsidian);
+            color: var(--off-white);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .mono {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.15em;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Arka plan kumlanma efekti */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+
+
+        /* --- BAŞLIK KİNETİK ANİMASYONU (WHAT I DO) --- */
+        .char {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(12px);
+            transform: translateY(30px) scale(0.9);
+            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .reveal.active .char {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0) scale(1);
+        }
+
+        /* LED Yanıp Sönme Efekti (DO kelimesi için) */
+        .text-outline {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+            color: transparent;
+        }
+
+        .led-flicker {
+            animation: ledPulse 4s infinite;
+        }
+
+        @keyframes ledPulse {
+
+            0%,
+            100% {
+                color: transparent;
+                -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+                text-shadow: none;
+            }
+
+            45%,
+            55% {
+                color: var(--matte-gold);
+                -webkit-text-stroke: 1px var(--matte-gold);
+                text-shadow: 0 0 15px rgba(201, 162, 77, 0.5), 0 0 30px rgba(201, 162, 77, 0.2);
+            }
+
+            47%,
+            53% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+                color: var(--matte-gold);
+                text-shadow: 0 0 25px rgba(201, 162, 77, 0.8);
+            }
+        }
+
+
+
+        /* --- AKORDEON TASARIMI --- */
+        .accordion-item {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .accordion-header {
+            padding: 3rem 0;
+            transition: opacity 0.4s ease;
+            text-align: left;
+        }
+
+        /* Üzerine gelindiğinde sadece renk değişir, hareket olmaz */
+        .service-title {
+            transition: color 0.4s ease;
+        }
+
+        .accordion-header:hover .service-title {
+            color: var(--matte-gold);
+        }
+
+        .accordion-icon {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            opacity: 0.2;
+        }
+
+        .accordion-item:hover .accordion-icon {
+            opacity: 0.8;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+            opacity: 1;
+            color: var(--matte-gold);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            opacity: 0;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 600px;
+            opacity: 1;
+            padding-bottom: 4rem;
+        }
+
+        /* --- NAVİGASYON --- */
+        .nav-menu-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-slide-items {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            overflow: hidden;
+            max-width: 0;
+            opacity: 0;
+            transition: max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+        }
+
+        .nav-slide-items.active {
+            max-width: 600px;
+            opacity: 1;
+        }
+
+        .nav-slide-item {
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem;
+            text-decoration: none;
+            white-space: nowrap;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-slide-items.active .nav-slide-item {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(1) {
+            transition-delay: 0.05s;
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(2) {
+            transition-delay: 0.1s;
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(3) {
+            transition-delay: 0.15s;
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(4) {
+            transition-delay: 0.2s;
+        }
+
+        .nav-slide-item .nav-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #9A9A9E;
+            transition: color 0.3s ease;
+        }
+
+        .nav-slide-item:hover .nav-label {
+            color: #C9A24D;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            margin-left: 0.5rem;
+        }
+
+        #menu-icon.rotated {
+            transform: rotate(90deg);
+        }
+
+
+
+        /* Mobile Nav Items (Default) */
+        .nav-slide-items {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.4s ease;
+        }
+
+        .nav-slide-items.active {
+            max-height: 500px;
+            /* Arbitrary large height for dropdown */
+            opacity: 1;
+        }
+
+        /* Desktop Nav Items (Horizontal Slide) */
+        @media (min-width: 768px) {
+            .nav-slide-items {
+                max-height: none;
+                max-width: 0;
+                transition: max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            }
+
+            .nav-slide-items.active {
+                max-width: 600px;
+            }
+        }
+
+        /* Fix for desktop navigation background & padding issue */
+        @media (min-width: 768px) {
+            #nav-slide {
+                background-color: transparent !important;
+                backdrop-filter: none !important;
+                padding: 0 !important;
+                gap: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#0E0E10] text-[#F5F5F7]">
+    <div class="noise"></div>
+
+
+    <!-- Navigasyon Menüsü -->
+    <nav class="fixed top-0 w-full z-50 bg-[#0E0E10]/80 backdrop-blur-xl">
+        <div class="w-full mx-auto px-10 h-20 flex items-center justify-between">
+            <!-- Logo + Menu -->
+            <div class="nav-menu-container">
+                <div class="text-lg font-medium tracking-tighter flex items-center gap-3 hover-target">
+                    <a href="index.html">
+                        <img src="logo-white.png"
+                            class="h-8 w-auto opacity-40 hover:opacity-100 transition-opacity duration-300"
+                            alt="Helmet Logo" onerror="this.style.display='none'">
+                    </a>
+                </div>
+                <div class="nav-divider"></div>
+                <!-- Menu Trigger -->
+                <button id="menu-trigger" onclick="toggleNavMenu()"
+                    class="text-sm uppercase tracking-[0.15em] font-medium mono text-[#9A9A9E] hover:text-white transition-colors flex items-center gap-2 hover-target">
+                    <span>Menu</span>
+                    <svg id="menu-icon" class="w-3 h-3 transition-transform duration-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+                <!-- Horizontal Slide Items -->
+                <div id="nav-slide"
+                    class="nav-slide-items absolute top-full left-0 w-full flex-col bg-[#0E0E10]/95 backdrop-blur-xl p-6 gap-6 md:static md:w-auto md:flex-row md:bg-transparent md:p-0 md:gap-0 font-medium">
+                    <a href="index.html"
+                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label">Home</span>
+                    </a>
+                    <a href="index.html#view-me"
+                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label">Me</span>
+                    </a>
+                    <a href="work.html"
+                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label text-[#C9A24D]">Works</span>
+                    </a>
+                    <div class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label">Services</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-8">
+                <!-- Spotlight Switch Removed -->
+
+                <div class="magnetic-wrap hover-target">
+                    <a href="mailto:info@helmet.media"
+                        class="text-xs uppercase tracking-[0.2em] border border-white/10 px-6 py-2.5 rounded-full hover:bg-white hover:text-black transition-all duration-500 mono">
+                        Say Hello
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 px-6 pb-12 md:pt-60 md:px-10 md:pb-32"> <!-- Removing min-h-screen to let footer rise -->
+        <div class="max-w-5xl mx-auto">
+
+            <!-- Dinamik Başlık Bölümü (LED Flicker ve Kinetik Giriş) -->
+            <header class="reveal mb-12 md:mb-48"> <!-- Reduced mobile margin -->
+                <span
+                    class="mono text-[10px] text-[#C9A24D] block tracking-[0.6em] uppercase mb-4 md:mb-10 opacity-60">Creative
+                    Studio // Services</span>
+                <h1 class="text-[clamp(3rem,11vw,7.5rem)] font-light serif uppercase leading-[0.8] tracking-tighter"
+                    id="animated-title"></h1>
+
+                <div
+                    class="mt-8 md:mt-20 flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-12">
+                    <p class="text-[#9A9A9E] text-base md:text-2xl font-light leading-relaxed max-w-xl italic serif">
+                        "Curating visual excellence through <span class="text-white">intentional frames</span> and
+                        digital precision."
+                    </p>
+                </div>
+            </header>
+
+            <!-- Hizmetler Listesi (Akordeon) -->
+            <div class="reveal delay-300">
+
+                <!-- 01 Film Production -->
+                <div class="accordion-item" data-accordion>
+                    <button class="accordion-header w-full flex items-center justify-between">
+                        <div class="flex items-center gap-10">
+                            <span class="mono text-[10px] text-[#C9A24D] opacity-40">01</span>
+                            <h2 class="service-title serif text-4xl md:text-5xl italic leading-tight">Film Production
+                            </h2>
+                        </div>
+                        <i data-lucide="plus" class="accordion-icon w-6 h-6"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid md:grid-cols-3 gap-12 pl-14 md:pl-20">
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Brand
+                                    Campaigns</h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Commercials and cinematic storytelling
+                                    designed for brand legacy.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Cinematic
+                                    Social</h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Short-form visuals that maintain
+                                    premium aesthetics on every platform.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">UGC Direction
+                                </h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Artfully directed organic content that
+                                    feels both authentic and high-end.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 02 Photography -->
+                <div class="accordion-item" data-accordion>
+                    <button class="accordion-header w-full flex items-center justify-between">
+                        <div class="flex items-center gap-10">
+                            <span class="mono text-[10px] text-[#C9A24D] opacity-40">02</span>
+                            <h2 class="service-title serif text-4xl md:text-5xl italic leading-tight">Photography</h2>
+                        </div>
+                        <i data-lucide="plus" class="accordion-icon w-6 h-6"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid md:grid-cols-3 gap-12 pl-14 md:pl-20">
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Editorial</h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Stylized imagery focusing on clean,
+                                    natural light and composition.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Product</h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Lifestyle and studio shots that
+                                    elevate the tactile brand experience.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Portraits</h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Intentional photography for founders,
+                                    teams, and visionaries.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 03 Design Studio -->
+                <div class="accordion-item" data-accordion>
+                    <button class="accordion-header w-full flex items-center justify-between">
+                        <div class="flex items-center gap-10">
+                            <span class="mono text-[10px] text-[#C9A24D] opacity-40">03</span>
+                            <h2 class="service-title serif text-4xl md:text-5xl italic leading-tight">Design Studio</h2>
+                        </div>
+                        <i data-lucide="plus" class="accordion-icon w-6 h-6"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid md:grid-cols-3 gap-12 pl-14 md:pl-20">
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Digital / Web
+                                </h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Landing pages and portfolio sites
+                                    built with a filmmaker's eye for flow.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Print Assets
+                                </h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Bespoke menu design, catalogs, and
+                                    flyers for a premium physical touch.</p>
+                            </div>
+                            <div class="space-y-3">
+                                <h3 class="text-white font-medium serif text-lg uppercase tracking-wider">Visual
+                                    Identity</h3>
+                                <p class="text-xs text-[#9A9A9E] leading-relaxed">Cohesive design collateral that
+                                    unifies your digital and physical presence.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 04 Retain Partners -->
+                <div class="accordion-item" data-accordion>
+                    <button class="accordion-header w-full flex items-center justify-between">
+                        <div class="flex items-center gap-10">
+                            <span class="mono text-[10px] text-[#C9A24D] opacity-40">04</span>
+                            <h2 class="service-title serif text-4xl md:text-5xl italic leading-tight">Retain Partners
+                            </h2>
+                        </div>
+                        <i data-lucide="plus" class="accordion-icon w-6 h-6"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="max-w-2xl pl-14 md:pl-20">
+                            <p class="text-lg text-white/80 leading-relaxed mb-4 serif italic">
+                                "Collaborations built for long-term growth and consistent cinematic volume."
+                            </p>
+                            <p class="text-xs text-[#9A9A9E] leading-relaxed uppercase tracking-widest">
+                                Monthly priority cycles // Scoped individually // Worldwide
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+    </main>
+
+    <!-- Alt Bilgi (Footer) -->
+    <footer class="py-10 px-10 border-t border-white/5 opacity-20"> <!-- Reduced padding -->
+        <div
+            class="flex flex-col md:flex-row justify-between items-center text-[8px] mono tracking-[0.5em] uppercase text-center md:text-left gap-4">
+            <p>© 2023 HELMET MEDIA</p>
+            <p>Toronto // 43.6532° N, 79.3832° W</p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // --- BAŞLIK HARF ANİMASYONU ---
+        const titleContainer = document.getElementById('animated-title');
+        const text1 = "WHAT I ";
+        const text2 = "DO";
+
+        text1.split('').forEach((char, i) => {
+            const span = document.createElement('span');
+            span.textContent = char === ' ' ? '\u00A0' : char;
+            span.className = 'char';
+            span.style.transitionDelay = `${i * 0.05}s`;
+            titleContainer.appendChild(span);
+        });
+
+        text2.split('').forEach((char, i) => {
+            const span = document.createElement('span');
+            span.textContent = char;
+            span.className = 'char text-outline led-flicker';
+            span.style.animationDelay = `${i * 0.5}s`;
+            span.style.transitionDelay = `${(text1.length + i) * 0.05 + 0.2}s`;
+            titleContainer.appendChild(span);
+        });
+
+
+
+        // Menü açma/kapama
+        function toggleNavMenu() {
+            document.getElementById('nav-slide').classList.toggle('active');
+            const icon = document.getElementById('menu-icon');
+            icon.classList.toggle('rotated');
+        }
+
+
+
+        // Akordeon mantığı
+        document.querySelectorAll('[data-accordion]').forEach(item => {
+            item.querySelector('.accordion-header').addEventListener('click', () => {
+                const wasActive = item.classList.contains('active');
+                document.querySelectorAll('[data-accordion]').forEach(el => el.classList.remove('active'));
+                if (!wasActive) item.classList.add('active');
+            });
+        });
+
+        // Manyetik buton efekti
+        document.querySelectorAll('.magnetic-wrap').forEach(wrap => {
+            wrap.addEventListener('mousemove', (e) => {
+                const pos = wrap.getBoundingClientRect();
+                const x = e.clientX - pos.left - pos.width / 2;
+                const y = e.clientY - pos.top - pos.height / 2;
+                wrap.style.transform = `translate3d(${x * 0.2}px, ${y * 0.2}px, 0)`;
+            });
+            wrap.addEventListener('mouseleave', () => wrap.style.transform = 'translate3d(0, 0, 0)');
+        });
+
+        // Kaydırma animasyonu başlatıcı
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>
