@@ -1,0 +1,786 @@
+<!-- HELMET MEDIA - Works Page (Geometric Mosaic Edition - Spacing Optimized) -->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Anthology | Helmet Media Studio</title>
+    <link rel="icon" href="logo-white.png" type="image/png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@100;200;300;400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --obsidian: #0E0E10;
+            --matte-gold: #C9A24D;
+            --off-white: #F5F5F7;
+            --studio-grey: #121214;
+        }
+
+        html,
+        body {
+            background-color: var(--obsidian);
+            color: var(--off-white);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .mono {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.2em;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Arka plan kumlanma efekti (Added for consistency) */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* --- GEOMETRIC GRID SYSTEM --- */
+        .expertise-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 6vh 5% 4vh 5%;
+            /* Alt padding biraz azaltıldı */
+        }
+
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        /* Card Styling */
+        .monolith-card {
+            position: relative;
+            overflow: hidden;
+            background: var(--studio-grey);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 2px;
+        }
+
+        .monolith-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0) brightness(0.4);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #1a1a1a;
+        }
+
+        .monolith-card:hover {
+            border-color: rgba(201, 162, 77, 0.4);
+            transform: translateY(-8px);
+            z-index: 10;
+        }
+
+        .monolith-card:hover img {
+            filter: saturate(1) brightness(0.8);
+            transform: scale(1.05);
+        }
+
+        /* --- OVERLAY TEXTS (CASE INFO) --- */
+        .card-meta {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: translateY(10px);
+        }
+
+        .monolith-card:hover .card-meta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .meta-case-no {
+            font-size: 8px;
+            color: var(--matte-gold);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .meta-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            font-style: italic;
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
+        }
+
+        .meta-brief {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.8);
+            /* Opaklık daha da artırıldı */
+            line-height: 1.5;
+            max-width: 90%;
+        }
+
+        /* --- LAYOUT UTILITIES --- */
+        .span-v {
+            grid-column: span 3;
+            aspect-ratio: 9/16;
+        }
+
+        .span-h {
+            grid-column: span 6;
+            aspect-ratio: 16/9;
+        }
+
+        .offset-1 {
+            margin-top: 4rem;
+        }
+
+        .offset-2 {
+            margin-top: 8rem;
+        }
+
+        /* Timeline indicator */
+        .timeline-bar {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 20vh;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 50;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--matte-gold);
+            transition: height 0.1s linear;
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modal */
+        #video-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 10005;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        #video-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- NAVİGASYON (Standardized) --- */
+        .nav-menu-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Mobile Nav Items (Default) */
+        .nav-slide-items {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.4s ease;
+        }
+
+        .nav-slide-items.active {
+            max-height: 500px;
+            /* Arbitrary large height for dropdown */
+            opacity: 1;
+        }
+
+        /* Desktop Nav Items (Horizontal Slide) */
+        @media (min-width: 768px) {
+            .nav-slide-items {
+                max-height: none;
+                max-width: 0;
+                transition: max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            }
+
+            .nav-slide-items.active {
+                max-width: 600px;
+            }
+        }
+
+        .nav-slide-item {
+            display: flex;
+            align-items: center;
+            padding: 0 1.25rem;
+            text-decoration: none;
+            white-space: nowrap;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-slide-items.active .nav-slide-item {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(1) {
+            transition-delay: 0.05s;
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(2) {
+            transition-delay: 0.1s;
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(3) {
+            transition-delay: 0.15s;
+        }
+
+        .nav-slide-items.active .nav-slide-item:nth-child(4) {
+            transition-delay: 0.2s;
+        }
+
+        .nav-slide-item .nav-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #9A9A9E;
+            transition: color 0.3s ease;
+        }
+
+        .nav-slide-item:hover .nav-label {
+            color: #C9A24D;
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            margin-left: 0.5rem;
+        }
+
+        #menu-icon.rotated {
+            transform: rotate(90deg);
+        }
+
+        /* Arka plan ışık süzmesi */
+
+
+
+
+        @media (max-width: 1024px) {
+            .span-v {
+                grid-column: span 6;
+            }
+
+            .span-h {
+                grid-column: span 12;
+            }
+
+            .offset-1,
+            .offset-2 {
+                margin-top: 0;
+            }
+
+            .side-title-area {
+                position: relative !important;
+                top: 0 !important;
+                margin-bottom: 2rem;
+            }
+
+            /* Mobile Specific Optimizations */
+            @media (max-width: 768px) {
+                .mosaic-grid {
+                    gap: 0.5rem;
+                    /* Further reduce gap */
+                }
+
+                .span-v {
+                    aspect-ratio: 1/1 !important;
+                    /* Make cards square to fit more vertically */
+                }
+
+                .card-meta {
+                    padding: 0.75rem;
+                }
+
+                .meta-title {
+                    font-size: 1rem !important;
+                }
+
+                .meta-case-no {
+                    display: none;
+                    /* Hide case number on mobile to save space */
+                }
+
+                /* Mobile Nav Adjustments */
+                .nav-slide-items {
+                    /* Inherits from standard CSS now */
+                }
+            }
+        }
+
+        /* Fix for desktop navigation background & padding issue */
+        @media (min-width: 768px) {
+            #nav-slide {
+                background-color: transparent !important;
+                backdrop-filter: none !important;
+                padding: 0 !important;
+                gap: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Scroll Progress -->
+    <div class="timeline-bar hidden md:block">
+        <div id="timeline-scroll" class="timeline-progress" style="height: 0%"></div>
+    </div>
+
+    <!-- Background Grid Effect -->
+    <div class="noise"></div>
+
+
+    <nav class="fixed top-0 w-full z-50 bg-[#0E0E10]/80 backdrop-blur-xl">
+        <div class="w-full mx-auto px-10 h-20 flex items-center justify-between">
+            <!-- Logo + Menu -->
+            <div class="nav-menu-container">
+                <div class="text-lg font-medium tracking-tighter flex items-center gap-3 hover-target">
+                    <a href="index.html">
+                        <img src="logo-white.png"
+                            class="h-8 w-auto opacity-40 hover:opacity-100 transition-opacity duration-300"
+                            alt="Helmet Logo" onerror="this.style.display='none'">
+                    </a>
+                </div>
+                <div class="nav-divider"></div>
+                <!-- Menu Trigger -->
+                <button id="menu-trigger" onclick="toggleNavMenu()"
+                    class="text-sm uppercase tracking-[0.15em] font-medium mono text-[#9A9A9E] hover:text-white transition-colors flex items-center gap-2 hover-target">
+                    <span>Menu</span>
+                    <svg id="menu-icon" class="w-3 h-3 transition-transform duration-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+                <!-- Horizontal Slide Items -->
+                <div id="nav-slide"
+                    class="nav-slide-items absolute top-full left-0 w-full flex-col bg-[#0E0E10]/95 backdrop-blur-xl p-6 gap-6 md:static md:w-auto md:flex-row md:bg-transparent md:p-0 md:gap-0 font-medium">
+                    <!-- Home (Link to Index) -->
+                    <a href="index.html"
+                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label">Home</span>
+                    </a>
+                    <!-- Me (Link to Index#view-me) -->
+                    <a href="index.html#view-me"
+                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label">Me</span>
+                    </a>
+                    <!-- Works (Active) -->
+                    <div class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label text-[#C9A24D]">Works</span>
+                    </div>
+                    <!-- Services -->
+                    <a href="services.html"
+                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
+                        <span class="nav-label">Services</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-8">
+                <!-- Spotlight Switch Removed -->
+
+                <div class="magnetic-wrap hover-target">
+                    <a href="mailto:info@helmet.media"
+                        class="text-xs uppercase tracking-[0.2em] border border-white/10 px-6 py-2.5 rounded-full hover:bg-white hover:text-black transition-all duration-500 mono">
+                        Say Hello
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-12 md:pt-40"> <!-- Mobile header padding reduced -->
+        <!-- Hero Section -->
+        <section class="px-5 md:px-20 mb-8 md:mb-20 reveal text-center md:text-left">
+            <!-- Reduced margins and side padding -->
+            <h1 class="serif text-5xl md:text-[140px] leading-none font-light italic">The Vault</h1>
+            <p
+                class="max-w-md mx-auto md:mx-0 text-white/70 text-[10px] uppercase tracking-[0.2em] mt-4 leading-relaxed hidden md:block">
+                <!-- Hide description on mobile to save space, or keep it very small -->
+                Where atmosphere becomes narrative, and experience becomes film.
+            </p>
+        </section>
+
+        <!-- CATEGORY 01: PRODUCT (4 Vertical) -->
+        <section id="product" class="expertise-section reveal">
+            <div class="grid grid-cols-12 gap-10">
+                <div class="col-span-12 lg:col-span-3 lg:sticky lg:top-40 h-fit side-title-area">
+                    <span class="mono text-[10px] text-[#C9A24D] block mb-4">01 //</span>
+                    <h2 class="serif text-4xl md:text-5xl italic leading-tight mb-6">Product & Mixology</h2>
+                </div>
+                <div class="col-span-12 lg:col-span-9">
+                    <div class="mosaic-grid">
+                        <!-- Card 1: 43 Down -->
+                        <div class="monolith-card span-v" onclick="openModal(this)" data-video="43th%204th%20lowq.mp4"
+                            data-title="Sheraton Toronto" data-brief="43 Down: A Signature Ritual">
+                            <img src="43th%204th.mp4_snapshot_.jpg" alt="Product 1">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">43 DOWN: A SIGNATURE
+                                    RITUAL</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Sheraton Toronto</h3>
+                            </div>
+                        </div>
+                        <!-- Card 2: Elevated Dinner Service -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="Frenchy%20Intro.mp4" data-title="Frenchy Bar et Brasserie"
+                            data-brief="Elevated Dinner Service">
+                            <img src="frame-01.jpg" alt="Product 2">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">ELEVATED DINNER SERVICE</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Frenchy Bar et Brasserie</h3>
+                            </div>
+                        </div>
+                        <!-- Card 3: Table Set For Love -->
+                        <div class="monolith-card span-v" onclick="openModal(this)"
+                            data-video="Frenchy%20Winterlicious%202.mp4" data-title="Frenchy Bar et Brasserie"
+                            data-brief="A Table Set For Love">
+                            <img src="Frenchy%20Winterlicious%202.mp4_snapshot_00.14.364.jpg" alt="Product 3">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">A TABLE SET FOR LOVE</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Frenchy Bar et Brasserie</h3>
+                            </div>
+                        </div>
+                        <!-- Card 4: Crafting The Signature -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="Frenchy%202.mp4" data-title="Frenchy Bar et Brasserie"
+                            data-brief="Crafting The Signature">
+                            <img src="frenchy%202%20thumbnail.jpg" alt="Product 4">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">CRAFTING THE SIGNATURE</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Frenchy Bar et Brasserie</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORY 02: LIFESTYLE (7 Vertical) -->
+        <section id="experience" class="expertise-section reveal">
+            <div class="grid grid-cols-12 gap-10">
+                <div class="col-span-12 lg:col-span-3 lg:sticky lg:top-40 h-fit side-title-area">
+                    <span class="mono text-[10px] text-[#C9A24D] block mb-4">02 //</span>
+                    <h2 class="serif text-4xl md:text-5xl italic leading-tight mb-6">Lifestyle & Experience</h2>
+                </div>
+                <div class="col-span-12 lg:col-span-9">
+                    <div class="mosaic-grid">
+                        <!-- Card 1: Private Celebration -->
+                        <div class="monolith-card span-v" onclick="openModal(this)" data-video="St%20Regis%20Vday.mp4"
+                            data-title="St. Regis Toronto" data-brief="Private Celebration">
+                            <img src="frame-06.jpg" alt="Lifestyle 1">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">PRIVATE CELEBRATION</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    St. Regis Toronto</h3>
+                            </div>
+                        </div>
+                        <!-- Card 2: Elevated Guest Experience -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="St%20Regis%20Butler%20Video.mp4" data-title="St. Regis Toronto"
+                            data-brief="Elevated Guest Experience">
+                            <img src="butler%20thumbnail.jpg" alt="Lifestyle 2">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">ELEVATED GUEST
+                                    EXPERIENCE</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    St. Regis Toronto</h3>
+                            </div>
+                        </div>
+                        <!-- Card 3: A Night of Celebration -->
+                        <div class="monolith-card span-v" onclick="openModal(this)" data-video="St%20Regis%20Party.mp4"
+                            data-title="Louix Louis" data-brief="A Night of Celebration">
+                            <img src="frame-02.jpg" alt="Lifestyle 3">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">A NIGHT OF CELEBRATION</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Louix Louis</h3>
+                            </div>
+                        </div>
+                        <!-- Card 4: Chocolate & Roses -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="Chocolate%20and%20Roses%203.mp4" data-title="Frenchy Bar et Brasserie"
+                            data-brief="Chocolate & Roses">
+                            <img src="roses.jpg" alt="Lifestyle 4">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">CHOCOLATE & ROSES</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Frenchy Bar et Brasserie</h3>
+                            </div>
+                        </div>
+                        <!-- Card 5: Couple Experience -->
+                        <div class="monolith-card span-v" onclick="openModal(this)"
+                            data-video="St%20Regis%20Couple%20Stay.mp4" data-title="St. Regis Toronto"
+                            data-brief="Couple Experience">
+                            <img src="frame-07.jpg" alt="Lifestyle 5">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">COUPLE EXPERIENCE</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    St. Regis Toronto</h3>
+                            </div>
+                        </div>
+                        <!-- Card 6: A Night to Remember -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="St%20Regis%20Chr.mp4" data-title="Louix Louis" data-brief="A Night to Remember">
+                            <img src="frame-03.jpg" alt="Lifestyle 6">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">A NIGHT TO REMEMBER</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Louix Louis</h3>
+                            </div>
+                        </div>
+                        <!-- Card 7: An Evening in Paris -->
+                        <div class="monolith-card span-v" onclick="openModal(this)"
+                            data-video="Valentine's%20Day%203.mp4" data-title="Frenchy Bar et Brasserie"
+                            data-brief="An Evening in Paris">
+                            <img src="valentines.jpg" alt="Lifestyle 7">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">AN EVENING IN PARIS</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Frenchy Bar et Brasserie</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORY 03: EVENTS (4 Vertical + 2 Horizontal) -->
+        <section id="events" class="expertise-section reveal">
+            <div class="grid grid-cols-12 gap-10">
+                <div class="col-span-12 lg:col-span-3 lg:sticky lg:top-40 h-fit side-title-area">
+                    <span class="mono text-[10px] text-[#C9A24D] block mb-4">03 //</span>
+                    <h2 class="serif text-4xl md:text-5xl italic leading-tight mb-6">Cinematic Recaps</h2>
+                </div>
+                <div class="col-span-12 lg:col-span-9">
+                    <div class="mosaic-grid">
+                        <!-- Card 1: Destination Canada -->
+                        <div class="monolith-card span-h" onclick="openModal(this)" data-video="Accesse%2027.mp4"
+                            data-title="Destination Canada" data-brief="Event Recap">
+                            <img src="accesse%20thumbnail.jpg" alt="Cinematic 1">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">EVENT RECAP</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Destination Canada</h3>
+                            </div>
+                        </div>
+                        <!-- Card 2: Bank of Montreal -->
+                        <div class="monolith-card span-h" onclick="openModal(this)" data-video="BMO%20ENG%20.mp4"
+                            data-title="Bank of Montreal" data-brief="Facility Introduction">
+                            <img src="bmo%20thumbnail.jpg" alt="Cinematic 2">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">FACILITY INTRODUCTION</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Bank of Montreal</h3>
+                            </div>
+                        </div>
+                        <!-- Card 3: Louis XIII -->
+                        <div class="monolith-card span-v" onclick="openModal(this)"
+                            data-video="St%20regis%20Louis%20XIII.mp4" data-title="Louix Louis"
+                            data-brief="A NIGHT TO REMEMBER">
+                            <img src="frame-09.jpg" alt="Cinematic 3">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">A NIGHT TO REMEMBER</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Louix Louis</h3>
+                            </div>
+                        </div>
+                        <!-- Card 4: A New Chapter -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="St%20Regis%202nd%20Event%20(2).mp4" data-title="St. Regis Toronto"
+                            data-brief="A New Chapter in Events">
+                            <img src="frame-05.jpg" alt="Cinematic 4">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">A NEW CHAPTER IN EVENTS</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    St. Regis Toronto</h3>
+                            </div>
+                        </div>
+                        <!-- Card 5: Curated Event Concept -->
+                        <div class="monolith-card span-v" onclick="openModal(this)"
+                            data-video="St%20Regis%201st%20Event%20(2).mp4" data-title="St. Regis Toronto"
+                            data-brief="Curated Event Concept">
+                            <img src="frame-04.jpg" alt="Cinematic 5">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">CURATED EVENT CONCEPT</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    St. Regis Toronto</h3>
+                            </div>
+                        </div>
+                        <!-- Card 6: Art & Soul -->
+                        <div class="monolith-card span-v offset-1" onclick="openModal(this)"
+                            data-video="W%20Toronto%20Art%20n%20Soul.mp4" data-title="Hotel W Toronto"
+                            data-brief="Art & Soul">
+                            <img src="w%20art%20n%20soul%20thumbnail.jpg" alt="Cinematic 6">
+                            <div class="card-meta">
+                                <span class="mono meta-case-no" style="font-size: 10px;">ART & SOUL</span>
+                                <h3 class="meta-title"
+                                    style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem;">
+                                    Hotel W Toronto</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-16 px-10 text-center border-t border-white/5"> <!-- py-32'den py-16'ya çekildi -->
+        <p class="mono text-[8px] text-white/50 tracking-[0.6em] uppercase">© 2023 HELMET MEDIA</p>
+    </footer>
+
+    <!-- Project Video Modal -->
+    <div id="video-modal" onclick="closeModal()">
+        <div class="w-full h-full relative p-6 md:p-20 flex flex-col items-center justify-center"
+            onclick="event.stopPropagation()">
+            <button onclick="closeModal()"
+                class="absolute top-10 right-10 mono text-[9px] text-white/60 hover:text-[#C9A24D] transition-colors">
+                [ CLOSE ]
+            </button>
+
+            <div class="w-full max-w-5xl aspect-video bg-black relative shadow-2xl border border-white/5">
+                <video id="modal-video" class="w-full h-full object-contain" controls playsinline webkit-playsinline
+                    preload="none"></video>
+                <!-- Frame Corners -->
+                <div class="absolute -top-px -left-px w-4 h-4 border-t border-l border-[#C9A24D]"></div>
+                <div class="absolute -top-px -right-px w-4 h-4 border-t border-r border-[#C9A24D]"></div>
+                <div class="absolute -bottom-px -left-px w-4 h-4 border-b border-l border-[#C9A24D]"></div>
+                <div class="absolute -bottom-px -right-px w-4 h-4 border-b border-r border-[#C9A24D]"></div>
+            </div>
+            <div class="mt-8 w-full text-left max-w-4xl mx-auto">
+                <p id="m-title" class="mono text-[10px] text-[#C9A24D] tracking-[0.4em] mb-2 uppercase"></p>
+                <p id="m-brief" class="serif text-2xl italic text-white/60 leading-relaxed"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Scroll Progress
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            const bar = document.getElementById('timeline-scroll');
+            if (bar) bar.style.height = scrolled + '%';
+        });
+
+        // Toggle Nav Menu
+        function toggleNavMenu() {
+            document.getElementById('nav-slide').classList.toggle('active');
+            document.getElementById('menu-icon').classList.toggle('rotated');
+        }
+
+
+
+        // Reveal effect
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        function openModal(el) {
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('modal-video');
+            document.getElementById('m-title').innerText = el.dataset.brief; // Eyebrow gets Brief (Category)
+            document.getElementById('m-brief').innerText = el.dataset.title; // Main text gets Title (Project Name)
+            video.src = el.dataset.video;
+            modal.classList.add('active');
+            video.play();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('modal-video');
+            modal.classList.remove('active');
+            video.pause();
+            video.currentTime = 0;
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    </script>
+</body>
+
+</html>
