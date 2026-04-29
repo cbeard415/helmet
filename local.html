@@ -866,7 +866,42 @@
     <script>
         lucide.createIcons();
 
-        function openModal(el) {
+        // Generate URL-friendly slug
+        function generateSlug(title) {
+            return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, '');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.local-card');
+            cards.forEach((card, index) => {
+                const title = card.dataset.title || 'video-' + index;
+                card.dataset.slug = generateSlug(title);
+            });
+
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#video=')) {
+                const targetSlug = hash.replace('#video=', '');
+                const targetCard = Array.from(cards).find(c => c.dataset.slug === targetSlug);
+                if (targetCard) {
+                    setTimeout(() => openModal(targetCard, false), 100);
+                }
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#video=')) {
+                const targetSlug = hash.replace('#video=', '');
+                const targetCard = Array.from(document.querySelectorAll('.local-card')).find(c => c.dataset.slug === targetSlug);
+                if (targetCard) {
+                    openModal(targetCard, false);
+                }
+            } else {
+                closeModal(false);
+            }
+        });
+
+        function openModal(el, updateUrl = true) {
             const modal = document.getElementById('video-modal');
             const video = document.getElementById('modal-video');
             document.getElementById('m-title').innerText = el.dataset.title;
@@ -878,16 +913,26 @@
                 video.src = videoId;
             }
 
+            if (updateUrl && el.dataset.slug) {
+                window.history.pushState(null, null, '#video=' + el.dataset.slug);
+            }
+
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeModal() {
+        function closeModal(updateUrl = true) {
             const modal = document.getElementById('video-modal');
             const video = document.getElementById('modal-video');
+            if (!modal.classList.contains('active')) return;
+            
             modal.classList.remove('active');
             video.src = "";
             document.body.style.overflow = '';
+            
+            if (updateUrl) {
+                window.history.pushState(null, null, window.location.pathname + window.location.search);
+            }
         }
 
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });

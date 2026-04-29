@@ -2134,8 +2134,44 @@
         // Spotlight Toggle Function
 
 
+        // Generate URL-friendly slug
+        function generateSlug(title, category) {
+            return (title + "-" + category).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, '');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('[data-video]');
+            cards.forEach((card, index) => {
+                const title = card.dataset.title || 'video';
+                const category = card.dataset.category || index;
+                card.dataset.slug = generateSlug(title, category);
+            });
+
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#video=')) {
+                const targetSlug = hash.replace('#video=', '');
+                const targetCard = Array.from(cards).find(c => c.dataset.slug === targetSlug);
+                if (targetCard) {
+                    setTimeout(() => openVideoModal(targetCard, false), 100);
+                }
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#video=')) {
+                const targetSlug = hash.replace('#video=', '');
+                const targetCard = Array.from(document.querySelectorAll('[data-video]')).find(c => c.dataset.slug === targetSlug);
+                if (targetCard) {
+                    openVideoModal(targetCard, false);
+                }
+            } else {
+                closeVideoModal(false);
+            }
+        });
+
         // Video Modal Functions
-        function openVideoModal(element) {
+        function openVideoModal(element, updateUrl = true) {
             const videoId = element.dataset.video;
             const category = element.dataset.category;
             const title = element.dataset.title;
@@ -2159,17 +2195,26 @@
                 titleEl.textContent = "Selected works created in collaboration with agencies and production teams.";
             }
 
+            if (updateUrl && element.dataset.slug) {
+                window.history.pushState(null, null, '#video=' + element.dataset.slug);
+            }
+
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeVideoModal() {
+        function closeVideoModal(updateUrl = true) {
             const modal = document.getElementById('video-modal');
             const iframe = document.getElementById('modal-video');
+            if (!modal.classList.contains('active')) return;
 
             iframe.src = ""; // Stops playback in iframe
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            
+            if (updateUrl) {
+                window.history.pushState(null, null, window.location.pathname + window.location.search);
+            }
         }
 
         // Close modal with Escape key
