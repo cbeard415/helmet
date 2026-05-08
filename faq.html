@@ -242,6 +242,43 @@
         .faq-item:first-child {
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
+        .faq-item h2 {
+            margin-bottom: 0 !important;
+            cursor: pointer;
+            position: relative;
+            padding-right: 3rem;
+            transition: color 0.3s ease;
+        }
+        .faq-item h2:hover {
+            color: #d4af37;
+        }
+        .faq-item h2::after {
+            content: '+';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5rem;
+            font-style: normal;
+            font-weight: 300;
+            transition: transform 0.4s ease, color 0.3s ease;
+            color: #C9A24D;
+        }
+        .faq-item.active h2::after {
+            transform: translateY(-50%) rotate(45deg);
+        }
+        .faq-item p {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            margin-top: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .faq-item.active p {
+            max-height: 1000px;
+            opacity: 1;
+            margin-top: 1.5rem;
+        }
     </style>
 </head>
 
@@ -456,6 +493,24 @@
             });
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // FAQ Accordion Logic
+        document.querySelectorAll('.faq-item h2').forEach(item => {
+            item.addEventListener('click', () => {
+                const parent = item.parentElement;
+                const isActive = parent.classList.contains('active');
+                
+                // Close all other FAQs
+                document.querySelectorAll('.faq-item').forEach(faq => {
+                    faq.classList.remove('active');
+                });
+                
+                // Toggle clicked FAQ
+                if (!isActive) {
+                    parent.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
 
