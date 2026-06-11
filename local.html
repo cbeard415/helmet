@@ -645,234 +645,448 @@
             </div>
         </section>
 
-        <section class="px-6 pb-40">
-            <div class="max-w-7xl mx-auto bg-[#DDB40A] text-black rounded-[60px] p-12 md:p-20 lg:p-24 relative overflow-hidden">
-                <div class="absolute -bottom-20 -right-20 opacity-10 rotate-12 pointer-events-none">
-                    <img src="logo-white.png" class="w-[500px] object-contain invert" alt="Helmet Studio">
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- PRICING CARDS — SIDE BY SIDE WITH HOVER TILT       -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <section id="pricing-section" class="px-6 pb-40">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+                .pricing-header {
+                    text-align: center;
+                    margin-bottom: 60px;
+                }
+                .pricing-header .ph-label {
+                    font-family: 'Instrument Serif', serif;
+                    font-size: 16px;
+                    color: rgba(255,255,255,0.4);
+                    letter-spacing: 0.04em;
+                    margin-bottom: 4px;
+                }
+                .pricing-header .ph-title {
+                    font-family: 'Bebas Neue', sans-serif;
+                    font-size: clamp(48px, 8vw, 100px);
+                    line-height: 0.9;
+                    text-transform: uppercase;
+                    color: #fff;
+                }
+                .pricing-header .ph-title span {
+                    color: var(--vibrant-red);
+                }
+
+                /* Grid */
+                .pricing-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 32px;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+                @media (max-width: 600px) {
+                    .pricing-grid {
+                        grid-template-columns: 1fr;
+                        max-width: 100%;
+                        gap: 28px;
+                    }
+                    .pricing-header {
+                        margin-bottom: 40px;
+                    }
+                    .tc-header {
+                        padding: 18px 18px 14px;
+                    }
+                    .tc-body {
+                        padding: 14px 18px 16px;
+                        gap: 12px;
+                    }
+                    .tc-title { font-size: 16px; }
+                    .tc-badge { font-size: 7px; padding: 3px 7px; }
+                    .tc-tagline { font-size: 12px; }
+                    .tc-feat-text { font-size: 11px; }
+                    .tc-feat-icon { width: 24px; height: 24px; }
+                    .tc-feat-icon svg { width: 12px; height: 12px; }
+                    .tc-features { gap: 8px 6px; }
+                    .tc-price-amount { font-size: 24px; }
+                    .tc-cta-btn { padding: 9px 14px; font-size: 10px; }
+                }
+                @media (min-width: 601px) and (max-width: 900px) {
+                    .pricing-grid {
+                        grid-template-columns: 1fr 1fr;
+                        max-width: 680px;
+                        gap: 24px;
+                    }
+                }
+                @media (min-width: 901px) and (max-width: 1100px) {
+                    .pricing-grid {
+                        gap: 20px;
+                    }
+                }
+
+                /* Card tilt wrapper */
+                .tilt-card {
+                    perspective: 800px;
+                }
+                .tilt-card-inner {
+                    border-radius: 20px;
+                    overflow: hidden;
+                    border: 1px solid rgba(255,255,255,0.1);
+                    box-shadow:
+                        0 4px 24px rgba(0,0,0,0.4),
+                        inset 0 1px 1px rgba(255,255,255,0.08);
+                    background: #111;
+                    transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                                box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                                border-color 0.35s ease;
+                    transform-style: preserve-3d;
+                    will-change: transform;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .tilt-card:hover .tilt-card-inner {
+                    border-color: rgba(255,59,48,0.4);
+                    box-shadow:
+                        0 20px 60px rgba(0,0,0,0.6),
+                        0 0 40px rgba(255,59,48,0.08),
+                        inset 0 1px 1px rgba(255,255,255,0.12);
+                }
+
+                /* Card header */
+                .tc-header {
+                    padding: 22px 24px 18px;
+                    position: relative;
+                    flex-shrink: 0;
+                }
+                .tc-badge {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    background: #fff;
+                    color: #000;
+                    font-size: 8px;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    padding: 4px 9px;
+                    border-radius: 4px;
+                    text-transform: uppercase;
+                }
+                .tc-badge.star::before { content: '★ '; }
+                .tc-title {
+                    font-size: 18px;
+                    font-weight: 700;
+                    letter-spacing: -0.01em;
+                    color: #fff;
+                    text-transform: uppercase;
+                    line-height: 1.1;
+                    font-family: 'Space Grotesk', sans-serif;
+                }
+                .tc-subtitle {
+                    font-size: 10px;
+                    font-weight: 500;
+                    color: rgba(255,255,255,0.6);
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                    margin-top: 3px;
+                }
+
+                /* Card body */
+                .tc-body {
+                    background: rgba(255,255,255,0.03);
+                    flex: 1;
+                    padding: 18px 24px 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                    position: relative;
+                    border-top: 1px solid rgba(255,255,255,0.06);
+                }
+                .tc-body::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+                    background-size: 16px 16px;
+                    pointer-events: none;
+                }
+
+                .tc-tagline {
+                    font-size: 13px;
+                    color: rgba(255,255,255,0.65);
+                    font-weight: 400;
+                    line-height: 1.4;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .tc-features {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px 8px;
+                    position: relative;
+                    z-index: 1;
+                    flex: 1;
+                }
+                .tc-feat-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .tc-feat-icon {
+                    width: 26px;
+                    height: 26px;
+                    background: #1a1a1a;
+                    border-radius: 5px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                }
+                .tc-feat-icon svg {
+                    width: 14px;
+                    height: 14px;
+                    color: #fff;
+                    opacity: 0.75;
+                }
+                .tc-feat-text {
+                    font-size: 12px;
+                    color: rgba(255,255,255,0.75);
+                    font-weight: 500;
+                    line-height: 1.2;
+                }
+
+                .tc-divider {
+                    height: 1px;
+                    border-top: 1px dashed rgba(255,255,255,0.15);
+                    position: relative;
+                    z-index: 1;
+                }
+                .tc-divider::before {
+                    content: '✕';
+                    font-size: 7px;
+                    color: rgba(255,255,255,0.2);
+                    position: absolute;
+                    left: 40%;
+                    top: -4px;
+                    background: #111;
+                    padding: 0 4px;
+                }
+
+                .tc-footer {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    position: relative;
+                    z-index: 1;
+                    gap: 8px;
+                }
+                .tc-price-wrap { display: flex; align-items: baseline; gap: 2px; }
+                .tc-price-dollar { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.6); }
+                .tc-price-amount { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #fff; }
+                .tc-price-tax { font-size: 9px; color: rgba(255,255,255,0.35); margin-left: 2px; }
+
+                .tc-cta-btn {
+                    background: #fff;
+                    color: #000;
+                    font-size: 11px;
+                    font-weight: 700;
+                    padding: 10px 18px;
+                    border-radius: 7px;
+                    letter-spacing: 0.04em;
+                    text-transform: uppercase;
+                    cursor: pointer;
+                    border: none;
+                    white-space: nowrap;
+                    transition: background 0.25s, color 0.25s, transform 0.25s;
+                }
+                .tc-cta-btn:hover {
+                    background: var(--vibrant-red);
+                    color: #fff;
+                    transform: scale(1.06);
+                }
+
+                /* Bottom accent triangle */
+                .tc-triangle {
+                    position: absolute;
+                    bottom: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 0; height: 0;
+                    border-left: 14px solid transparent;
+                    border-right: 14px solid transparent;
+                    border-bottom: 14px solid rgba(255,214,0,0.5);
+                    z-index: 2;
+                }
+                .tc-corner {
+                    position: absolute;
+                    bottom: 4px;
+                    left: 4px;
+                    width: 14px;
+                    height: 14px;
+                    border: 2px solid rgba(255,255,255,0.15);
+                    border-radius: 3px;
+                    z-index: 2;
+                }
+
+                /* Shine overlay on hover */
+                .tc-shine {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    z-index: 10;
+                    border-radius: 20px;
+                    opacity: 0;
+                    transition: opacity 0.35s ease;
+                    background: radial-gradient(
+                        600px circle at var(--mx) var(--my),
+                        rgba(255,255,255,0.06),
+                        transparent 50%
+                    );
+                }
+                .tilt-card:hover .tc-shine {
+                    opacity: 1;
+                }
+            </style>
+
+            <div class="max-w-7xl mx-auto">
+                <div class="pricing-header">
+                    <div class="ph-label">Helmet Media® · Local Series</div>
+                    <h2 class="ph-title">Simple <span>Pricing.</span></h2>
                 </div>
-                
-                <div class="relative z-10">
-                    <span class="font-black uppercase tracking-[0.4em] text-sm mb-6 block">Choose Your Package</span>
-                    <h2 class="font-bebas text-7xl md:text-[100px] leading-[0.85] mb-20 uppercase">Simple <br>Pricing.</h2>
-                    
-                    <div class="flex flex-wrap justify-center gap-8 lg:gap-12">
-                        <!-- Custom Package Card 1 -->
-                        <div class="card">
-                            <div class="card-pattern-grid"></div>
-                            <div class="card-overlay-dots"></div>
 
-                            <div class="bold-pattern">
-                                <svg viewBox="0 0 100 100">
-                                    <path stroke-dasharray="15 10" stroke-width="10" stroke="#000" fill="none" d="M0,0 L100,0 L100,100 L0,100 Z"></path>
-                                </svg>
-                            </div>
-
-                            <div class="card-title-area">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="leading-none mt-1">THE QUICK ONE</span>
-                                    <span class="text-[9px] font-black tracking-widest uppercase opacity-70 leading-none">Perfect for trying things out</span>
-                                </div>
-                                <span class="card-tag uppercase">Quick Win</span>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="card-description">
-                                    1 reel. Shot, edited, delivered fast.
-                                </div>
-
-                                <div class="feature-grid">
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M20,4C21.1,4 22,4.9 22,6V18C22,19.1 21.1,20 20,20H4C2.9,20 2,19.1 2,18V6C2,4.9 2.9,4 4,4H20M4,6V18H20V6H4M6,9H18V11H6V9M6,13H16V15H6V13Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">High-Energy Edit</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M12,17.56L16.07,16.43L16.62,10.33H9.38L9.2,8.3H16.8L17,6.31H7L7.56,12.32H14.45L14.22,14.9L12,15.5L9.78,14.9L9.64,13.24H7.64L7.93,16.43L12,17.56M4.07,3H19.93L18.5,19.2L12,21L5.5,19.2L4.07,3Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Sound Design</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M18.5,4L19.66,8.35L18.7,8.61C18.25,7.74 17.79,6.87 17.26,6.43C16.11,6 15.5,6H13V16.5C13,17 13,17.5 13.33,17.75C13.67,18 14.33,18 15,18V19H9V18C9.67,18 10.33,18 10.67,17.75C11,17.5 11,17 11,16.5V6H8.5C7.89,6 7.27,6 6.74,6.43C6.21,6.87 5.75,7.74 5.3,8.61L4.34,8.35L5.5,4H18.5Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Color Grading</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M9.19,6.35C8.41,7.13 7.75,8.05 7.25,9H5V11H7.12C7.05,11.32 7,12C7,12.34 7.05,12.68 7.12,13H5V15H7.25C7.75,15.95 8.41,16.87 9.19,17.65L7.77,19.07L9.88,21.18L11.3,19.77C11.85,20.03 12.41,20.2 13,20.31V23H15V20.31C15.59,20.2 16.15,20.03 16.7,19.77L18.12,21.18L20.23,19.07L18.81,17.65C19.59,16.87 20.25,15.95 20.75,15H23V13H20.88C20.95,12.68 21,12.34 21,12C21,11.66 20.95,11.32 20.88,11H23V9H20.75C20.25,8.05 19.59,7.13 18.81,6.35L20.23,4.93L18.12,2.82L16.7,4.23C16.15,3.97 15.59,3.8 15,3.69V1H13V3.69C12.41,3.8 11.85,3.97 11.3,4.23L9.88,2.82L7.77,4.93L9.19,6.35M13,17A5,5 0 0,1 8,12A5,5 0 0,1 13,7A5,5 0 0,1 18,12A5,5 0 0,1 13,17Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Fast Delivery</span>
-                                    </div>
-                                </div>
-
-                                <div class="card-actions">
-                                    <div class="price">
-                                        <span class="price-currency">$</span>500<span class="price-period">+TAX</span>
-                                    </div>
-                                    <button class="card-button" onclick="window.location.href='contact.html'">LET'S TALK</button>
-                                </div>
-                            </div>
-
-                            <div class="dots-pattern">
-                                <svg viewBox="0 0 80 40">
-                                    <circle fill="#000" r="3" cy="10" cx="10"></circle><circle fill="#000" r="3" cy="10" cx="30"></circle><circle fill="#000" r="3" cy="10" cx="50"></circle><circle fill="#000" r="3" cy="10" cx="70"></circle>
-                                    <circle fill="#000" r="3" cy="20" cx="20"></circle><circle fill="#000" r="3" cy="20" cx="40"></circle><circle fill="#000" r="3" cy="20" cx="60"></circle>
-                                    <circle fill="#000" r="3" cy="30" cx="10"></circle><circle fill="#000" r="3" cy="30" cx="30"></circle><circle fill="#000" r="3" cy="30" cx="50"></circle><circle fill="#000" r="3" cy="30" cx="70"></circle>
-                                </svg>
-                            </div>
-                            <div class="accent-shape"></div>
-                            <div class="corner-slice"></div>
-                            <div class="stamp"><span class="stamp-text">Viral</span></div>
-                        </div>
-
-                        <!-- Custom Package Card 2 -->
-                        <div class="card">
-                            <div class="card-pattern-grid"></div>
-                            <div class="card-overlay-dots"></div>
-
-                            <div class="bold-pattern">
-                                <svg viewBox="0 0 100 100">
-                                    <path stroke-dasharray="15 10" stroke-width="10" stroke="#000" fill="none" d="M0,0 L100,0 L100,100 L0,100 Z"></path>
-                                </svg>
-                            </div>
-
-                            <div class="card-title-area">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="leading-none mt-1">THE LOCAL SESSION</span>
-                                    <span class="text-[9px] font-black tracking-widest uppercase opacity-70 leading-none">Perfect for active local brands</span>
-                                </div>
-                                <span class="card-tag uppercase">Most Popular</span>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="card-description">
-                                    2 reels + 8 photos. Half-day shoot.
-                                </div>
-
-                                <div class="feature-grid">
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M20,4C21.1,4 22,4.9 22,6V18C22,19.1 21.1,20 20,20H4C2.9,20 2,19.1 2,18V6C2,4.9 2.9,4 4,4H20M4,6V18H20V6H4M6,9H18V11H6V9M6,13H16V15H6V13Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Creative Direction</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M12,17.56L16.07,16.43L16.62,10.33H9.38L9.2,8.3H16.8L17,6.31H7L7.56,12.32H14.45L14.22,14.9L12,15.5L9.78,14.9L9.64,13.24H7.64L7.93,16.43L12,17.56M4.07,3H19.93L18.5,19.2L12,21L5.5,19.2L4.07,3Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Color Grading</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M18.5,4L19.66,8.35L18.7,8.61C18.25,7.74 17.79,6.87 17.26,6.43C16.11,6 15.5,6H13V16.5C13,17 13,17.5 13.33,17.75C13.67,18 14.33,18 15,18V19H9V18C9.67,18 10.33,18 10.67,17.75C11,17.5 11,17 11,16.5V6H8.5C7.89,6 7.27,6 6.74,6.43C6.21,6.87 5.75,7.74 5.3,8.61L4.34,8.35L5.5,4H18.5Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Sound Design</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M9.19,6.35C8.41,7.13 7.75,8.05 7.25,9H5V11H7.12C7.05,11.32 7,12C7,12.34 7.05,12.68 7.12,13H5V15H7.25C7.75,15.95 8.41,16.87 9.19,17.65L7.77,19.07L9.88,21.18L11.3,19.77C11.85,20.03 12.41,20.2 13,20.31V23H15V20.31C15.59,20.2 16.15,20.03 16.7,19.77L18.12,21.18L20.23,19.07L18.81,17.65C19.59,16.87 20.25,15.95 20.75,15H23V13H20.88C20.95,12.68 21,12.34 21,12C21,11.66 20.95,11.32 20.88,11H23V9H20.75C20.25,8.05 19.59,7.13 18.81,6.35L20.23,4.93L18.12,2.82L16.7,4.23C16.15,3.97 15.59,3.8 15,3.69V1H13V3.69C12.41,3.8 11.85,3.97 11.3,4.23L9.88,2.82L7.77,4.93L9.19,6.35M13,17A5,5 0 0,1 8,12A5,5 0 0,1 13,7A5,5 0 0,1 18,12A5,5 0 0,1 13,17Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">8 Pro Photos</span>
-                                    </div>
-                                </div>
-
-                                <div class="card-actions">
-                                    <div class="price">
-                                        <span class="price-currency">$</span>850<span class="price-period">+TAX</span>
-                                    </div>
-                                    <button class="card-button" onclick="window.location.href='contact.html'">LET'S SHOOT</button>
-                                </div>
-                            </div>
-
-                            <div class="dots-pattern">
-                                <svg viewBox="0 0 80 40">
-                                    <circle fill="#000" r="3" cy="10" cx="10"></circle><circle fill="#000" r="3" cy="10" cx="30"></circle><circle fill="#000" r="3" cy="10" cx="50"></circle><circle fill="#000" r="3" cy="10" cx="70"></circle>
-                                    <circle fill="#000" r="3" cy="20" cx="20"></circle><circle fill="#000" r="3" cy="20" cx="40"></circle><circle fill="#000" r="3" cy="20" cx="60"></circle>
-                                    <circle fill="#000" r="3" cy="30" cx="10"></circle><circle fill="#000" r="3" cy="30" cx="30"></circle><circle fill="#000" r="3" cy="30" cx="50"></circle><circle fill="#000" r="3" cy="30" cx="70"></circle>
-                                </svg>
-                            </div>
-                            <div class="accent-shape"></div>
-                            <div class="corner-slice"></div>
-                            <div class="stamp"><span class="stamp-text">Session</span></div>
-                        </div>
-
-                        <!-- Custom Package Card 3 -->
-                        <div class="card">
-                            <div class="card-pattern-grid"></div>
-                            <div class="card-overlay-dots"></div>
-
-                            <div class="bold-pattern">
-                                <svg viewBox="0 0 100 100">
-                                    <path stroke-dasharray="15 10" stroke-width="10" stroke="#000" fill="none" d="M0,0 L100,0 L100,100 L0,100 Z"></path>
-                                </svg>
-                            </div>
-
-                            <div class="card-title-area">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="leading-none mt-1">THE FULL PACKAGE</span>
-                                    <span class="text-[9px] font-black tracking-widest uppercase opacity-70 leading-none">Best for growing brands</span>
-                                </div>
-                                <span class="card-tag uppercase">Legend</span>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="card-description">
-                                    3 reels + 15 photos. One full day.
-                                </div>
-
-                                <div class="feature-grid">
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M20,4C21.1,4 22,4.9 22,6V18C22,19.1 21.1,20 20,20H4C2.9,20 2,19.1 2,18V6C2,4.9 2.9,4 4,4H20M4,6V18H20V6H4M6,9H18V11H6V9M6,13H16V15H6V13Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">3x Pro Videos</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M12,17.56L16.07,16.43L16.62,10.33H9.38L9.2,8.3H16.8L17,6.31H7L7.56,12.32H14.45L14.22,14.9L12,15.5L9.78,14.9L9.64,13.24H7.64L7.93,16.43L12,17.56M4.07,3H19.93L18.5,19.2L12,21L5.5,19.2L4.07,3Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">15 Pro Photos</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M18.5,4L19.66,8.35L18.7,8.61C18.25,7.74 17.79,6.87 17.26,6.43C16.11,6 15.5,6H13V16.5C13,17 13,17.5 13.33,17.75C13.67,18 14.33,18 15,18V19H9V18C9.67,18 10.33,18 10.67,17.75C11,17.5 11,17 11,16.5V6H8.5C7.89,6 7.27,6 6.74,6.43C6.21,6.87 5.75,7.74 5.3,8.61L4.34,8.35L5.5,4H18.5Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Creative Direction</span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <div class="feature-icon">
-                                            <svg viewBox="0 0 24 24"><path d="M9.19,6.35C8.41,7.13 7.75,8.05 7.25,9H5V11H7.12C7.05,11.32 7,12C7,12.34 7.05,12.68 7.12,13H5V15H7.25C7.75,15.95 8.41,16.87 9.19,17.65L7.77,19.07L9.88,21.18L11.3,19.77C11.85,20.03 12.41,20.2 13,20.31V23H15V20.31C15.59,20.2 16.15,20.03 16.7,19.77L18.12,21.18L20.23,19.07L18.81,17.65C19.59,16.87 20.25,15.95 20.75,15H23V13H20.88C20.95,12.68 21,12.34 21,12C21,11.66 20.95,11.32 20.88,11H23V9H20.75C20.25,8.05 19.59,7.13 18.81,6.35L20.23,4.93L18.12,2.82L16.7,4.23C16.15,3.97 15.59,3.8 15,3.69V1H13V3.69C12.41,3.8 11.85,3.97 11.3,4.23L9.88,2.82L7.77,4.93L9.19,6.35M13,17A5,5 0 0,1 8,12A5,5 0 0,1 13,7A5,5 0 0,1 18,12A5,5 0 0,1 13,17Z"></path></svg>
-                                        </div>
-                                        <span class="feature-text">Full Day Shoot</span>
-                                    </div>
-                                </div>
-
-                                <div class="card-actions">
-                                    <div class="price">
-                                        <span class="price-currency">$</span>1200<span class="price-period">+TAX</span>
-                                    </div>
-                                    <button class="card-button" onclick="window.location.href='contact.html'">LET'S PLAN THIS</button>
-                                </div>
-                            </div>
-
-                            <div class="dots-pattern">
-                                <svg viewBox="0 0 80 40">
-                                    <circle fill="#000" r="3" cy="10" cx="10"></circle><circle fill="#000" r="3" cy="10" cx="30"></circle><circle fill="#000" r="3" cy="10" cx="50"></circle><circle fill="#000" r="3" cy="10" cx="70"></circle>
-                                    <circle fill="#000" r="3" cy="20" cx="20"></circle><circle fill="#000" r="3" cy="20" cx="40"></circle><circle fill="#000" r="3" cy="20" cx="60"></circle>
-                                    <circle fill="#000" r="3" cy="30" cx="10"></circle><circle fill="#000" r="3" cy="30" cx="30"></circle><circle fill="#000" r="3" cy="30" cx="50"></circle><circle fill="#000" r="3" cy="30" cx="70"></circle>
-                                </svg>
-                            </div>
-                            <div class="accent-shape"></div>
-                            <div class="corner-slice"></div>
-                            <div class="stamp"><span class="stamp-text">Legend</span></div>
-                        </div>
-                    </div>
-                </div>
+                <div class="pricing-grid" id="pricing-grid"></div>
             </div>
-        </section>
 
+            <script>
+            (function() {
+                const PACKAGES = [
+                    {
+                        title: 'The Quick One',
+                        subtitle: 'Perfect for trying things out',
+                        badge: 'Quick Win',
+                        badgeStar: false,
+                        tagline: '1 reel. Shot, edited, delivered fast.',
+                        features: [
+                            { icon: 'video', text: 'High-Energy Edit' },
+                            { icon: 'music', text: 'Sound Design' },
+                            { icon: 'palette', text: 'Color Grading' },
+                            { icon: 'bolt', text: 'Fast Delivery' },
+                        ],
+                        price: '500',
+                        cta: "Let's Talk",
+                        color: '#E03030',
+                    },
+                    {
+                        title: 'The Local Session',
+                        subtitle: 'Perfect for active local brands',
+                        badge: 'Most Popular',
+                        badgeStar: true,
+                        tagline: '2 reels + 8 photos. Half-day shoot.',
+                        features: [
+                            { icon: 'wand', text: 'Creative Direction' },
+                            { icon: 'palette', text: 'Color Grading' },
+                            { icon: 'music', text: 'Sound Design' },
+                            { icon: 'camera', text: '8 Pro Photos' },
+                        ],
+                        price: '850',
+                        cta: "Let's Shoot",
+                        color: '#C72828',
+                    },
+                    {
+                        title: 'The Full Package',
+                        subtitle: 'Best for growing brands',
+                        badge: 'Legend',
+                        badgeStar: true,
+                        tagline: '3 reels + 15 photos. One full day.',
+                        features: [
+                            { icon: 'video', text: '3x Pro Videos' },
+                            { icon: 'camera', text: '15 Pro Photos' },
+                            { icon: 'wand', text: 'Creative Direction' },
+                            { icon: 'sun', text: 'Full Day Shoot' },
+                        ],
+                        price: '1200',
+                        cta: "Let's Plan This",
+                        color: '#B82020',
+                    }
+                ];
+
+                function iconSVG(name) {
+                    const i = {
+                        video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+                        music: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+                        palette: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+                        bolt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+                        wand: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/></svg>`,
+                        camera: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>`,
+                        sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
+                    };
+                    return i[name] || i.video;
+                }
+
+                const grid = document.getElementById('pricing-grid');
+
+                PACKAGES.forEach(pkg => {
+                    const outer = document.createElement('div');
+                    outer.className = 'tilt-card';
+
+                    const inner = document.createElement('div');
+                    inner.className = 'tilt-card-inner';
+
+                    inner.innerHTML = `
+                        <div class="tc-shine"></div>
+                        <div class="tc-header" style="background:${pkg.color}">
+                            <div class="tc-title">${pkg.title}</div>
+                            <div class="tc-subtitle">${pkg.subtitle}</div>
+                            <div class="tc-badge${pkg.badgeStar ? ' star' : ''}">${pkg.badge}</div>
+                        </div>
+                        <div class="tc-body">
+                            <div class="tc-tagline">${pkg.tagline}</div>
+                            <div class="tc-features">
+                                ${pkg.features.map(f => `
+                                    <div class="tc-feat-item">
+                                        <div class="tc-feat-icon">${iconSVG(f.icon)}</div>
+                                        <span class="tc-feat-text">${f.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="tc-divider"></div>
+                            <div class="tc-footer">
+                                <div class="tc-price-wrap">
+                                    <span class="tc-price-dollar">$</span>
+                                    <span class="tc-price-amount">${pkg.price}</span>
+                                    <span class="tc-price-tax">+TAX</span>
+                                </div>
+                                <button class="tc-cta-btn" onclick="window.location.href='contact.html'">${pkg.cta}</button>
+                            </div>
+                        </div>
+                        <div class="tc-triangle"></div>
+                        <div class="tc-corner"></div>
+                    `;
+
+                    outer.appendChild(inner);
+                    grid.appendChild(outer);
+
+                    // ── Hover tilt effect (desktop only) ──
+                    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+                    if (!isTouch) {
+                        const shine = inner.querySelector('.tc-shine');
+                        outer.addEventListener('mousemove', e => {
+                            const rect = outer.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            const cx = rect.width / 2;
+                            const cy = rect.height / 2;
+                            const rotY = ((x - cx) / cx) * 12;
+                            const rotX = ((cy - y) / cy) * 10;
+                            inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
+                            shine.style.setProperty('--mx', x + 'px');
+                            shine.style.setProperty('--my', y + 'px');
+                        });
+                        outer.addEventListener('mouseleave', () => {
+                            inner.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+                        });
+                    }
+                });
+            })();
+            </script>
+        </section>
         <!-- Worldcup Series Card -->
         <section class="px-6 pb-40">
             <div class="max-w-7xl mx-auto rounded-[60px] relative overflow-hidden group border-2 border-white/5 hover:border-[#FFD600] transition-colors duration-500">
