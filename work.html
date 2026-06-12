@@ -13,7 +13,7 @@
 
     <!-- Google Fonts -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@100;200;300;400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@100;200;300;400;500&family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@300;400&display=swap"
         rel="stylesheet">
 
     <style>
@@ -22,13 +22,42 @@
             --matte-gold: #C9A24D;
             --off-white: #F5F5F7;
             --studio-grey: #121214;
+            --ink: #141210;
+            --bone: #EAE5DC;
+            --smoke: #8F897F;
+            --champagne: #BFA77A;
+            --line: rgba(234,229,220,.13);
+        }
+
+        /* ---------- header ---------- */
+        header{position:fixed;top:0;left:0;right:0;z-index:70;
+          display:flex;align-items:baseline;justify-content:space-between;
+          padding:26px 28px;transition:background .5s,backdrop-filter .5s}
+        header.scrolled{background:rgba(20,18,16,.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+        .wordmark{font-size:22px;letter-spacing:.01em;color:var(--bone)}
+        .wordmark i{font-style:italic;color:var(--champagne)}
+        header nav{display:flex;gap:30px;font-size:11px}
+        header nav a{color:var(--smoke);transition:color .3s}
+        header nav a:hover{color:var(--bone)}
+        header nav a.active{color:var(--bone);border-bottom:1px solid var(--champagne);padding-bottom:2px}
+        header nav a.cta{color:var(--bone);border-bottom:1px solid var(--champagne);padding-bottom:2px}
+        @media (max-width:820px){
+          header{padding:20px}
+          header nav{gap:18px}
+          header nav a:not(.cta){display:none}
+        }
+        @media (max-width: 480px) {
+          header{padding: 16px 20px;}
+          .wordmark{font-size: 18px;}
+          .helmet-cube-btn{padding: 0.5em 1.2em; font-size: 9px;}
         }
 
         html,
         body {
-            background-color: var(--obsidian);
-            color: var(--off-white);
-            font-family: 'Montserrat', sans-serif;
+            background-color: var(--ink);
+            color: var(--bone);
+            font-family: 'Geist', system-ui, sans-serif;
+            font-weight: 300;
             overflow-x: hidden;
             width: 100%;
             position: relative;
@@ -36,12 +65,15 @@
         }
 
         .mono {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 0.2em;
+            font-family: 'Geist Mono', monospace;
+            font-weight: 300;
+            letter-spacing: .08em;
+            text-transform: uppercase;
         }
 
         .serif {
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Instrument Serif', serif;
+            font-weight: 400;
         }
 
         /* Arka plan kumlanma efekti (Added for consistency) */
@@ -447,7 +479,7 @@
         }
 
         .helmet-cube .bg-inner {
-            background: #0E0E10;
+            background: var(--ink);
             position: absolute;
             left: 1px;
             right: 1px;
@@ -466,14 +498,14 @@
         }
 
         .helmet-cube:hover .text {
-            color: #0E0E10;
+            color: var(--ink);
             transition: all 0.4s;
         }
 
         .helmet-cube:hover .bg-right,
         .helmet-cube:hover .bg,
         .helmet-cube:hover .bg-top {
-            background: #0E0E10;
+            background: var(--ink);
         }
 
         .helmet-cube:active {
@@ -499,81 +531,22 @@
     <div class="noise"></div>
 
 
-    <nav class="fixed top-0 w-full z-50 bg-[#0E0E10]/80 backdrop-blur-xl">
-        <div class="w-full mx-auto px-10 h-20 flex items-center justify-between">
-            <!-- Logo + Menu -->
-            <div class="nav-menu-container">
-                <div class="text-lg font-medium tracking-tighter flex items-center gap-3 hover-target">
-                    <a href="index.html">
-                        <img src="logo-white.png"
-                            class="h-8 w-auto opacity-40 hover:opacity-100 transition-opacity duration-300"
-                            alt="Helmet Logo" onerror="this.style.display='none'">
-                    </a>
-                </div>
-                <div class="nav-divider"></div>
-                <!-- Menu Trigger -->
-                <button id="menu-trigger" onclick="toggleNavMenu()"
-                    class="text-sm uppercase tracking-[0.15em] font-medium mono text-[#9A9A9E] hover:text-white transition-colors flex items-center gap-2 hover-target">
-                    <span>Menu</span>
-                    <svg id="menu-icon" class="w-3 h-3 transition-transform duration-300" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
-                <!-- Horizontal Slide Items -->
-                <div id="nav-slide"
-                    class="nav-slide-items absolute top-full left-0 w-full flex-col bg-[#0E0E10]/95 backdrop-blur-xl p-6 gap-6 md:static md:w-auto md:flex-row md:bg-transparent md:p-0 md:gap-0 font-medium">
-                    <!-- Home (Link to Index) -->
-                    <a href="index.html"
-                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
-                        <span class="nav-label">Home</span>
-                    </a>
-                    <!-- Me (Link to Index#view-me) -->
-                    <a href="index.html#view-me"
-                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
-                        <span class="nav-label">Me</span>
-                    </a>
-                    <!-- Works (Active) -->
-                    <div class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
-                        <span class="nav-label text-[#C9A24D]">Works</span>
-                    </div>
-                    <!-- Services -->
-                    <a href="services.html"
-                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
-                        <span class="nav-label">Services</span>
-                    </a>
-                    <a href="faq.html"
-                        class="nav-slide-item hover-target w-full md:w-auto justify-center md:justify-start">
-                        <span class="nav-label">FAQ</span>
-                    </a>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="magnetic-wrap hover-target">
-                    <a href="contact.html"
-                        class="text-xs uppercase tracking-[0.2em] border border-white/10 px-6 py-2.5 rounded-full hover:bg-white hover:text-black transition-all duration-500 mono flex items-center justify-center h-10">
-                        Contact
-                    </a>
-                </div>
-
-                <div class="magnetic-wrap hover-target">
-                    <button class="helmet-cube-btn helmet-cube" type="button" onclick="window.location.href='local.html'">
-                      <div class="bg-top">
-                        <div class="bg-inner"></div>
-                      </div>
-                      <div class="bg-right">
-                        <div class="bg-inner"></div>
-                      </div>
-                      <div class="bg">
-                        <div class="bg-inner"></div>
-                      </div>
-                      <div class="text">Helmet Local</div>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <header id="hdr">
+        <a class="wordmark serif" href="index.html">Helmet<i>.</i></a>
+        <nav class="mono">
+            <a href="work.html" class="active">Work</a>
+            <a href="index.html#services">Services</a>
+            <a href="index.html#about">About</a>
+            <a href="index.html#faq">FAQ</a>
+            <a class="cta" href="index.html#contact">Start a project</a>
+        </nav>
+        <button class="helmet-cube-btn helmet-cube" type="button" onclick="window.location.href='local-series.html'">
+            <div class="bg-top"><div class="bg-inner"></div></div>
+            <div class="bg-right"><div class="bg-inner"></div></div>
+            <div class="bg"><div class="bg-inner"></div></div>
+            <div class="text">Helmet Local</div>
+        </button>
+    </header>
 
     <main class="pt-24 pb-12 md:pt-40"> <!-- Mobile header padding reduced -->
         <!-- Hero Section -->
@@ -873,6 +846,9 @@
             const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
             const bar = document.getElementById('timeline-scroll');
             if (bar) bar.style.height = scrolled + '%';
+            
+            const hdr = document.getElementById('hdr');
+            if (hdr) hdr.classList.toggle('scrolled', window.scrollY > 40);
         });
 
         // Toggle Nav Menu
