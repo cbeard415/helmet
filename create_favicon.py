@@ -15,8 +15,8 @@ def make_favicon():
         
     img = Image.open(img_path)
     
-    # Use the brand dark background #0E0E10
-    bg_color = (14, 14, 16, 255)
+    # Use a transparent background
+    bg_color = (0, 0, 0, 0)
     
     # Create background image
     bg = Image.new('RGBA', img.size, bg_color)
